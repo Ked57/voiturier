@@ -12,13 +12,11 @@
     "start": "node ./dist/app.js",
     "prettier": "prettier *.json \"src/**/*.ts\"  \".circleci/config.yml\"",
     "prettier:check": "npm run prettier -- --check",
-    "prettier:write": "npm run prettier -- --write",
-    "hasura": "hasura --project ./hasura"
+    "prettier:write": "npm run prettier -- --write"
   },
   "devDependencies": {
     "@types/node": "^16.7.2",
     "dotenv": "^10.0.0",
-    "hasura-cli": "^2.0.7",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2",
     "ts-node": "^10.2.1",
@@ -27,7 +25,6 @@
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
-    "@urql/core": "^2.3.1",
     "discord.js": "^13.1.0",
     "graphql": "^15.5.1",
     "ts-pattern": "^3.2.5"

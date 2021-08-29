@@ -6,7 +6,6 @@ import {
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { store } from "../app";
-import { createInitialCarMessageActionRow } from "../button";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
   const carOption = interaction.options.get("voiture", true);
@@ -30,7 +29,14 @@ export const aCommand = {
     }
     const modelLabel = String(model);
     const reactRow = new MessageActionRow().addComponents([
-      createInitialCarMessageActionRow(),
+      new MessageButton()
+        .setCustomId("found")
+        .setLabel("Marquer ✅")
+        .setStyle("SUCCESS"),
+      new MessageButton()
+        .setCustomId("delete")
+        .setLabel("Supprimer ❌")
+        .setStyle("DANGER"),
     ]);
     const embed = new MessageEmbed().setColor("#0099ff").setTitle(modelLabel);
     const reply = await interaction.reply({

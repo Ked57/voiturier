@@ -5,6 +5,7 @@ import {
   MessageEmbed,
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { store } from "../app";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
   const carOption = interaction.options.get("voiture", true);
@@ -22,20 +23,31 @@ export const aCommand = {
       option.setName("voiture").setDescription("Le modèle de la voiture")
     ),
   execute: async (interaction: CommandInteraction) => {
+    const model = interaction.options.get("voiture")?.value;
+    if (!model) {
+      return;
+    }
+    const modelLabel = String(model);
     const reactRow = new MessageActionRow().addComponents([
-      new MessageButton().setCustomId("ok").setLabel("Ok").setStyle("SUCCESS"),
       new MessageButton()
-        .setCustomId("sell")
-        .setLabel("Vendre")
-        .setStyle("SECONDARY"),
+        .setCustomId("found")
+        .setLabel("Marquer ✅")
+        .setStyle("SUCCESS"),
       new MessageButton()
         .setCustomId("delete")
-        .setLabel("Supprimer")
+        .setLabel("Supprimer ❌")
         .setStyle("DANGER"),
     ]);
-    const embed = new MessageEmbed()
-      .setColor("#0099ff")
-      .setTitle(`${interaction.options.get("voiture")?.value}`);
-    await interaction.reply({ embeds: [embed], components: [reactRow] });
+    const embed = new MessageEmbed().setColor("#0099ff").setTitle(modelLabel);
+    const reply = await interaction.reply({
+      embeds: [embed],
+      components: [reactRow],
+      fetchReply: true,
+    });
+    store.mutations.addCar({
+      messageId: reply.id,
+      model: modelLabel,
+      state: "IDLE",
+    });
   },
 };

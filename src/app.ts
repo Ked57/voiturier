@@ -1,45 +1,33 @@
-import { SlashCommandBuilder } from "@discordjs/builders";
 import { REST } from "@discordjs/rest";
 import { Routes } from "discord-api-types/v9";
-import { Client, Collection, CommandInteraction, Intents } from "discord.js";
+import { Client, Collection, Intents } from "discord.js";
+import { handleButton } from "./button";
 import { aCommand } from "./commands/a";
+import { Command, handleCommand } from "./commands/command";
 import { initConfig } from "./config";
+import { initStore } from "./store";
 
 export const config = initConfig();
+export const store = initStore();
 
 const rest = new REST({ version: "9" }).setToken(config.TOKEN);
 
 const commandList = [aCommand];
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
-const commands = new Collection<
-  string,
-  {
-    data: Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
-    execute: (interaction: CommandInteraction) => Promise<void>;
-  }
->();
+export const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
+const commands = new Collection<string, Command>();
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
-
-  const command = commands.get(interaction.commandName);
-
-  if (!command) return;
-
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: "There was an error while executing this command!",
-      ephemeral: true,
-    });
+  if (interaction.isCommand()) {
+    handleCommand(commands, interaction);
+  } else if (interaction.isButton()) {
+    handleButton(interaction);
   }
 });
+
 (async () => {
   try {
     console.log("Started refreshing Voiturier (/) commands.");

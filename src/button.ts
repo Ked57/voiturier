@@ -37,6 +37,7 @@ export const createCarFoundMessageActionRow = () =>
   ]);
 
 export const handleButton = (interaction: ButtonInteraction) => {
+  if (!interaction.isButton()) return;
   match(interaction.customId)
     .with("found", () => {
       const embed = interaction.message.embeds[0];

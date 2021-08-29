@@ -5,7 +5,7 @@ import {
   MessageEmbed,
 } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { store } from "../app";
+import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
@@ -22,8 +22,16 @@ export const aCommand = {
     .setDescription(`Ajoute une voiture à la liste`)
     .addStringOption((option) =>
       option.setName("voiture").setDescription("Le modèle de la voiture")
-    ),
+    )
+    ,
   execute: async (interaction: CommandInteraction) => {
+    if(interaction.channelId !== config.VEHICLE_CHANNEL_ID) {
+      interaction.reply({
+        content: "La commande n'a pas été éxécutée dans le bon channel",
+        ephemeral: true,
+      });
+      return;
+    }
     const model = interaction.options.get("voiture")?.value;
     if (!model) {
       return;

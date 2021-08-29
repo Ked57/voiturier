@@ -3,12 +3,38 @@ import {
   MessageActionRow,
   MessageButton,
   MessageEmbed,
-  MessageManager,
-  TextBasedChannel,
 } from "discord.js";
 import { match } from "ts-pattern";
 import { client, store } from "./app";
 import { Car } from "./store";
+
+export const createInitialCarMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("found")
+      .setLabel("Marquer ✅")
+      .setStyle("SUCCESS"),
+    new MessageButton()
+      .setCustomId("delete")
+      .setLabel("Supprimer ❌")
+      .setStyle("DANGER"),
+  ]);
+
+export const createFoundCarMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("lost")
+      .setLabel("Démarquer 🤬")
+      .setStyle("PRIMARY"),
+    new MessageButton()
+      .setCustomId("sell")
+      .setLabel("Vendre 💰")
+      .setStyle("SECONDARY"),
+    new MessageButton()
+      .setCustomId("delete")
+      .setLabel("Supprimer ❌")
+      .setStyle("DANGER"),
+  ]);
 
 export const handleButton = (interaction: ButtonInteraction) => {
   match(interaction.customId)
@@ -23,22 +49,7 @@ export const handleButton = (interaction: ButtonInteraction) => {
         state: "FOUND",
       });
       interaction.update({
-        components: [
-          new MessageActionRow().addComponents([
-            new MessageButton()
-              .setCustomId("lost")
-              .setLabel("Démarquer 🤬")
-              .setStyle("PRIMARY"),
-            new MessageButton()
-              .setCustomId("sell")
-              .setLabel("Vendre 💰")
-              .setStyle("SECONDARY"),
-            new MessageButton()
-              .setCustomId("delete")
-              .setLabel("Supprimer ❌")
-              .setStyle("DANGER"),
-          ]),
-        ],
+        components: [createFoundCarMessageActionRow()],
         embeds: [
           new MessageEmbed()
             .setColor("#26773F")
@@ -64,18 +75,7 @@ export const handleButton = (interaction: ButtonInteraction) => {
         state: "IDLE",
       });
       interaction.update({
-        components: [
-          new MessageActionRow().addComponents([
-            new MessageButton()
-              .setCustomId("found")
-              .setLabel("Marquer ✅")
-              .setStyle("SUCCESS"),
-            new MessageButton()
-              .setCustomId("delete")
-              .setLabel("Supprimer ❌")
-              .setStyle("DANGER"),
-          ]),
-        ],
+        components: [createInitialCarMessageActionRow()],
         embeds: [new MessageEmbed().setColor("#0099ff").setTitle(embed.title)],
       });
     })

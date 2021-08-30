@@ -22,10 +22,9 @@ export const aCommand = {
     .setDescription(`Ajoute une voiture à la liste`)
     .addStringOption((option) =>
       option.setName("voiture").setDescription("Le modèle de la voiture")
-    )
-    ,
+    ),
   execute: async (interaction: CommandInteraction) => {
-    if(interaction.channelId !== config.VEHICLE_CHANNEL_ID) {
+    if (interaction.channelId !== config.VEHICLE_CHANNEL_ID) {
       interaction.reply({
         content: "La commande n'a pas été éxécutée dans le bon channel",
         ephemeral: true,
@@ -38,7 +37,10 @@ export const aCommand = {
     }
     const modelLabel = String(model);
     const reactRow = createCarInitialMessageActionRow();
-    const embed = new MessageEmbed().setColor("#0099ff").setTitle(modelLabel);
+    const embed = new MessageEmbed()
+      .setColor("#0099ff")
+      .setTitle(modelLabel)
+      .addField("Pour", interaction.member?.user.username || "");
     const reply = await interaction.reply({
       embeds: [embed],
       components: [reactRow],

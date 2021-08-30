@@ -57,6 +57,11 @@ export const handleButton = (interaction: ButtonInteraction) => {
             .setTitle(embed.title)
             .setFields([
               {
+                name: "Pour",
+                value: interaction.member?.user.username || "",
+                inline: true,
+              },
+              {
                 name: "Marqué par",
                 value: interaction.user.username,
                 inline: true,
@@ -77,7 +82,18 @@ export const handleButton = (interaction: ButtonInteraction) => {
       });
       interaction.update({
         components: [createCarInitialMessageActionRow()],
-        embeds: [new MessageEmbed().setColor("#0099ff").setTitle(embed.title)],
+        embeds: [
+          new MessageEmbed()
+            .setColor("#0099ff")
+            .setTitle(embed.title)
+            .setFields([
+              {
+                name: "Pour",
+                value: interaction.member?.user.username || "",
+                inline: true,
+              },
+            ]),
+        ],
       });
     })
     .with("sell", async () => {

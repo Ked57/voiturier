@@ -1,9 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  Collection,
-  CommandInteraction,
-  GuildMember,
-} from "discord.js";
+import { Collection, CommandInteraction, GuildMember } from "discord.js";
 import { userHasRoles } from "../user";
 
 export type Command = {
@@ -17,7 +13,12 @@ export const handleCommand = async (
 ) => {
   if (!interaction.isCommand()) return;
 
-  if (!userHasRoles(interaction.member as GuildMember, ["Jamestown", "Chef Runner"])) {
+  if (
+    !userHasRoles(interaction.member as GuildMember, [
+      "Jamestown",
+      "Chef Runner",
+    ])
+  ) {
     interaction.reply({
       content: "Vous n'êtes pas authorizé a éxécuter cette commande",
       ephemeral: true,

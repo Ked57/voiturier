@@ -1,5 +1,6 @@
 import {
   CommandInteraction,
+  GuildMember,
   MessageActionRow,
   MessageButton,
   MessageEmbed,
@@ -7,6 +8,7 @@ import {
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
+import { createCarInitialEmbed } from "../embed";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
   const carOption = interaction.options.get("voiture", true);
@@ -37,10 +39,10 @@ export const aCommand = {
     }
     const modelLabel = String(model);
     const reactRow = createCarInitialMessageActionRow();
-    const embed = new MessageEmbed()
-      .setColor("#0099ff")
-      .setTitle(modelLabel)
-      .addField("Pour", interaction.member?.user.username || "");
+    const embed = createCarInitialEmbed(
+      modelLabel,
+      (interaction.member as GuildMember).displayName || ""
+    );
     const reply = await interaction.reply({
       embeds: [embed],
       components: [reactRow],

@@ -1,11 +1,13 @@
 import {
   ButtonInteraction,
+  GuildMember,
   MessageActionRow,
   MessageButton,
   MessageEmbed,
 } from "discord.js";
 import { match } from "ts-pattern";
 import { client, store } from "./app";
+import { createCarFoundEmbed, createCarInitialEmbed } from "./embed";
 import { Car } from "./store";
 
 export const createCarInitialMessageActionRow = () =>
@@ -52,21 +54,11 @@ export const handleButton = (interaction: ButtonInteraction) => {
       interaction.update({
         components: [createCarFoundMessageActionRow()],
         embeds: [
-          new MessageEmbed()
-            .setColor("#26773F")
-            .setTitle(embed.title)
-            .setFields([
-              {
-                name: "Pour",
-                value: interaction.member?.user.username || "",
-                inline: true,
-              },
-              {
-                name: "Marqué par",
-                value: interaction.user.username,
-                inline: true,
-              },
-            ]),
+          createCarFoundEmbed(
+            embed.title,
+            embed.fields?.at(0)?.value || "",
+            (interaction.member as GuildMember).displayName || ""
+          ),
         ],
       });
     })
@@ -83,16 +75,10 @@ export const handleButton = (interaction: ButtonInteraction) => {
       interaction.update({
         components: [createCarInitialMessageActionRow()],
         embeds: [
-          new MessageEmbed()
-            .setColor("#0099ff")
-            .setTitle(embed.title)
-            .setFields([
-              {
-                name: "Pour",
-                value: interaction.member?.user.username || "",
-                inline: true,
-              },
-            ]),
+          createCarInitialEmbed(
+            embed.title,
+            (interaction.member as GuildMember)?.displayName || ""
+          ),
         ],
       });
     })

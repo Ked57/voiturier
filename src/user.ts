@@ -1,9 +1,9 @@
 import { GuildMember } from "discord.js";
-import { client } from "./app";
+import { client, config } from "./app";
 
 export const userHasRoles = (user: GuildMember, roles: string[]) => {
   const foundRoles = client.guilds.cache
-    .find((value) => value.name === "What's up dev")
+    .find((value) => value.id === config.GUILD_ID)
     ?.roles.cache.filter(
       (value) => typeof roles.find((v) => v === value.name) === "string"
     );

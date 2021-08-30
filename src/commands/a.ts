@@ -9,6 +9,7 @@ import { SlashCommandBuilder } from "@discordjs/builders";
 import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
 import { createCarInitialEmbed } from "../embed";
+import { postInVehicleRunner } from "../vehicle-runner";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
   const carOption = interaction.options.get("voiture", true);
@@ -48,10 +49,12 @@ export const aCommand = {
       components: [reactRow],
       fetchReply: true,
     });
+    const runnerMessageId = await postInVehicleRunner(String(model));
     store.mutations.addCar({
       messageId: reply.id,
       model: modelLabel,
       state: "IDLE",
+      runnerMessageId,
     });
   },
 };

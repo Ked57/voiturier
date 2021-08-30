@@ -4,6 +4,7 @@ export type Car = {
   model: string;
   state: CarState;
   messageId: string;
+  runnerMessageId: string;
 };
 
 export type Runner = {
@@ -47,18 +48,30 @@ export const initStore = () => {
   };
   const mutations = {
     addCar: (value: Car) => (state.cars = [...state.cars, value]),
-    removeCar: (value: Car) =>
+    removeCar: (messageId: string) =>
       (state.cars = [
-        ...state.cars.filter((car) => car.messageId !== value.messageId),
+        ...state.cars.filter((car) => car.messageId !== messageId),
       ]),
-    updateCarState: (value: Car) => {
+    updateCarState: (messageId: string, carState: CarState) => {
+      const car = state.cars.find(
+        (car) =>
+          car.messageId === messageId || car.runnerMessageId === messageId
+      );
+      if (!car) {
+        console.error(
+          "ERROR: Updating car state -> couldn't find car with messageId or runnerMessageId",
+          messageId
+        );
+        return;
+      }
       state.cars = [
-        ...state.cars.filter((car) => car.messageId !== value.messageId),
-        value,
+        ...state.cars.filter((car) => car.messageId !== messageId),
+        { ...car, state: carState },
       ];
     },
-    sellCar: (value: Car) => {
+    sellCar: (messageId: string) => {
       state.dailyCount = state.dailyCount + 1;
+      state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
     },
   };
   return {

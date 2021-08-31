@@ -3,6 +3,8 @@ export type CarState = "IDLE" | "FOUND";
 export type Car = {
   model: string;
   state: CarState;
+  for: string;
+  foundBy?: string;
   messageId: string;
   runnerMessageId: string;
 };
@@ -52,7 +54,11 @@ export const initStore = () => {
       (state.cars = [
         ...state.cars.filter((car) => car.messageId !== messageId),
       ]),
-    updateCarState: (messageId: string, carState: CarState) => {
+    updateCarState: (
+      messageId: string,
+      carState: CarState,
+      foundBy?: string
+    ) => {
       const car = state.cars.find(
         (car) =>
           car.messageId === messageId || car.runnerMessageId === messageId
@@ -66,7 +72,7 @@ export const initStore = () => {
       }
       state.cars = [
         ...state.cars.filter((car) => car.messageId !== messageId),
-        { ...car, state: carState },
+        { ...car, state: carState, foundBy },
       ];
     },
     sellCar: (messageId: string) => {

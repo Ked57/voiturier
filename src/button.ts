@@ -7,12 +7,6 @@ import {
 import { match } from "ts-pattern";
 import { config, store } from "./app";
 import { getChannel } from "./channel";
-import {
-  createCarFoundEmbed,
-  createCarInitialEmbed,
-  createRunnerCarFoundEmbed,
-  createRunnerCarInitialEmbed,
-} from "./embed";
 
 export const createCarInitialMessageActionRow = () =>
   new MessageActionRow().addComponents([
@@ -62,6 +56,14 @@ export const handleButton = (interaction: ButtonInteraction) => {
   if (!interaction.isButton()) return;
   match(interaction.customId)
     .with("found", () => {
+      const foundBy = (interaction.member as GuildMember).displayName;
+      if (!foundBy) {
+        console.error(
+          "ERROR: Clicking 'found' button -> Unknown display user",
+          interaction.message.id
+        );
+        return;
+      }
       const car = store.state.cars.find(
         (car) =>
           car.messageId === interaction.message.id ||
@@ -74,11 +76,7 @@ export const handleButton = (interaction: ButtonInteraction) => {
         );
         return;
       }
-      const embed = interaction.message.embeds[0];
-      if (!embed.title) {
-        return;
-      }
-      store.mutations.updateCarState(interaction.message.id, "FOUND");
+      store.mutations.updateCarState(interaction.message.id, "FOUND", foundBy);
       const vehicleMessage = getChannel(
         config.VEHICLE_CHANNEL_ID
       )?.messages.cache.find((message) => message.id === car.messageId);
@@ -87,22 +85,11 @@ export const handleButton = (interaction: ButtonInteraction) => {
       )?.messages.cache.find((message) => message.id === car.runnerMessageId);
       vehicleMessage?.edit({
         components: [createCarFoundMessageActionRow()],
-        embeds: [
-          createCarFoundEmbed(
-            embed.title,
-            vehicleMessage.embeds[0]?.fields?.at(0)?.value || "",
-            (interaction.member as GuildMember).displayName || ""
-          ),
-        ],
+        content: `${car.model} - ${car.for} - **${foundBy}** ✅`,
       });
       vehicleRunnerMessage?.edit({
         components: [createRunnerCarFoundMessageActionRow()],
-        embeds: [
-          createRunnerCarFoundEmbed(
-            embed.title,
-            (interaction.member as GuildMember).displayName || ""
-          ),
-        ],
+        content: `${car.model} ✅`,
       });
     })
     .with("lost", () => {
@@ -118,10 +105,6 @@ export const handleButton = (interaction: ButtonInteraction) => {
         );
         return;
       }
-      const embed = interaction.message.embeds[0];
-      if (!embed.title) {
-        return;
-      }
       store.mutations.updateCarState(interaction.message.id, "IDLE");
       const vehicleMessage = getChannel(
         config.VEHICLE_CHANNEL_ID
@@ -131,16 +114,11 @@ export const handleButton = (interaction: ButtonInteraction) => {
       )?.messages.cache.find((message) => message.id === car.runnerMessageId);
       vehicleMessage?.edit({
         components: [createCarInitialMessageActionRow()],
-        embeds: [
-          createCarInitialEmbed(
-            embed.title,
-            vehicleMessage.embeds[0]?.fields?.at(0)?.value || ""
-          ),
-        ],
+        content: `${car.model} - ${car.for}`,
       });
       vehicleRunnerMessage?.edit({
         components: [createRunnerCarInitialMessageActionRow()],
-        embeds: [createRunnerCarInitialEmbed(embed.title)],
+        content: `${car.model}`,
       });
     })
     .with("sell", async () => {
@@ -152,10 +130,6 @@ export const handleButton = (interaction: ButtonInteraction) => {
           "ERROR: Clicking 'sell' button -> Couldn't find car with messageId",
           interaction.message.id
         );
-        return;
-      }
-      const embed = interaction.message.embeds[0];
-      if (!embed.title) {
         return;
       }
       try {
@@ -185,10 +159,6 @@ export const handleButton = (interaction: ButtonInteraction) => {
           "ERROR: Clicking 'delete' button -> Couldn't find car with messageId",
           interaction.message.id
         );
-        return;
-      }
-      const embed = interaction.message.embeds[0];
-      if (!embed.title) {
         return;
       }
       try {

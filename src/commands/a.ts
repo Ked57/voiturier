@@ -8,7 +8,6 @@ import {
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
-import { createCarInitialEmbed } from "../embed";
 import { postInVehicleRunner } from "../vehicle-runner";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
@@ -39,13 +38,13 @@ export const aCommand = {
       return;
     }
     const modelLabel = String(model);
+    const owner = (interaction.member as GuildMember).displayName;
+    if (!owner) {
+      return;
+    }
     const reactRow = createCarInitialMessageActionRow();
-    const embed = createCarInitialEmbed(
-      modelLabel,
-      (interaction.member as GuildMember).displayName || ""
-    );
     const reply = await interaction.reply({
-      embeds: [embed],
+      content: `${modelLabel} - ${owner}`,
       components: [reactRow],
       fetchReply: true,
     });
@@ -55,6 +54,7 @@ export const aCommand = {
       model: modelLabel,
       state: "IDLE",
       runnerMessageId,
+      for: owner,
     });
   },
 };

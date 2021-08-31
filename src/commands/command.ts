@@ -20,7 +20,7 @@ export const handleCommand = async (
     ])
   ) {
     interaction.reply({
-      content: "Vous n'êtes pas authorizé a éxécuter cette commande",
+      content: "Vous n'êtes pas autorisé a éxécuter cette commande",
       ephemeral: true,
     });
     return;

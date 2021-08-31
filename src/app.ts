@@ -5,6 +5,7 @@ import { handleButton } from "./button";
 import { aCommand } from "./commands/a";
 import { Command, handleCommand } from "./commands/command";
 import { initConfig } from "./config";
+import { loadFromDB } from "./db";
 import { initStore } from "./store";
 
 export const config = initConfig();
@@ -43,6 +44,12 @@ client.on("interactionCreate", async (interaction) => {
       }
     );
     console.log("Successfully reloaded Voiturier (/) commands.");
+    console.log(
+      `Started loading Voiturier state from ${
+        process.env.NODE_ENV === "production" ? "S3" : "filesystem"
+      }.`
+    );
+    await loadFromDB();
   } catch (error) {
     console.error(error);
   }

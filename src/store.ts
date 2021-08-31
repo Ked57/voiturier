@@ -1,3 +1,5 @@
+import { saveToDB } from "./db";
+
 export type CarState = "IDLE" | "FOUND";
 
 export type Car = {
@@ -39,8 +41,15 @@ export type State = {
 
 export type Mutation = (...args: any) => void;
 
+const mutationify =
+  (mutation: Mutation) =>
+  (...args: any) => {
+    mutation(args);
+    saveToDB();
+  };
+
 export const initStore = () => {
-  const state: State = {
+  let state: State = {
     cars: [],
     dailyCount: 0,
     runners: [],
@@ -48,17 +57,18 @@ export const initStore = () => {
     prices: [],
     rdvPlaces: [],
   };
-  const mutations = {
-    addCar: (value: Car) => (state.cars = [...state.cars, value]),
-    removeCar: (messageId: string) =>
+  const loadState = mutationify((loadedState: State) => (state = loadedState));
+  const addCar = mutationify(
+    (value: Car) => (state.cars = [...state.cars, value])
+  );
+  const removeCar = mutationify(
+    (messageId: string) =>
       (state.cars = [
         ...state.cars.filter((car) => car.messageId !== messageId),
-      ]),
-    updateCarState: (
-      messageId: string,
-      carState: CarState,
-      foundBy?: string
-    ) => {
+      ])
+  );
+  const updateCarState = mutationify(
+    (messageId: string, carState: CarState, foundBy?: string) => {
       const car = state.cars.find(
         (car) =>
           car.messageId === messageId || car.runnerMessageId === messageId
@@ -74,14 +84,20 @@ export const initStore = () => {
         ...state.cars.filter((car) => car.messageId !== messageId),
         { ...car, state: carState, foundBy },
       ];
-    },
-    sellCar: (messageId: string) => {
-      state.dailyCount = state.dailyCount + 1;
-      state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
-    },
-  };
+    }
+  );
+  const sellCar = mutationify((messageId: string) => {
+    state.dailyCount = state.dailyCount + 1;
+    state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
+  });
   return {
     state,
-    mutations,
+    mutations: {
+      loadState,
+      addCar,
+      removeCar,
+      updateCarState,
+      sellCar,
+    },
   };
 };

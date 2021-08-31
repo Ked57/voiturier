@@ -1,4 +1,4 @@
-import { saveToDB } from "./db";
+import { loadFromDB, saveToDB } from "./db";
 
 export type CarState = "IDLE" | "FOUND";
 
@@ -41,15 +41,8 @@ export type State = {
 
 export type Mutation = (...args: any) => void;
 
-const mutationify =
-  (mutation: Mutation) =>
-  (...args: any) => {
-    mutation(args);
-    saveToDB();
-  };
-
 export const initStore = () => {
-  let state: State = {
+  const state: State = {
     cars: [],
     dailyCount: 0,
     runners: [],
@@ -57,39 +50,45 @@ export const initStore = () => {
     prices: [],
     rdvPlaces: [],
   };
-  const loadState = mutationify((loadedState: State) => (state = loadedState));
-  const addCar = mutationify(
-    (value: Car) => (state.cars = [...state.cars, value])
-  );
-  const removeCar = mutationify(
-    (messageId: string) =>
-      (state.cars = [
-        ...state.cars.filter((car) => car.messageId !== messageId),
-      ])
-  );
-  const updateCarState = mutationify(
-    (messageId: string, carState: CarState, foundBy?: string) => {
-      const car = state.cars.find(
-        (car) =>
-          car.messageId === messageId || car.runnerMessageId === messageId
+  const loadState = (loadedState: State) => {
+    Object.entries(loadedState).map(([key, value]) =>
+      Object.assign(state, { [key]: value })
+    );
+  };
+  const addCar = (car: Car) => {
+    state.cars = [...state.cars, car];
+    saveToDB();
+  };
+  const removeCar = (messageId: string) => {
+    state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
+    saveToDB();
+  };
+  const updateCarState = (
+    messageId: string,
+    carState: CarState,
+    foundBy?: string
+  ) => {
+    const car = state.cars.find(
+      (car) => car.messageId === messageId || car.runnerMessageId === messageId
+    );
+    if (!car) {
+      console.error(
+        "ERROR: Updating car state -> couldn't find car with messageId or runnerMessageId",
+        messageId
       );
-      if (!car) {
-        console.error(
-          "ERROR: Updating car state -> couldn't find car with messageId or runnerMessageId",
-          messageId
-        );
-        return;
-      }
-      state.cars = [
-        ...state.cars.filter((car) => car.messageId !== messageId),
-        { ...car, state: carState, foundBy },
-      ];
+      return;
     }
-  );
-  const sellCar = mutationify((messageId: string) => {
+    state.cars = [
+      ...state.cars.filter((car) => car.messageId !== messageId),
+      { ...car, state: carState, foundBy },
+    ];
+    saveToDB();
+  };
+  const sellCar = (messageId: string) => {
     state.dailyCount = state.dailyCount + 1;
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
-  });
+    saveToDB();
+  };
   return {
     state,
     mutations: {

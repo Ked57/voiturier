@@ -6,6 +6,7 @@ export const saveToDB = () => {
   match(process.env.NODE_ENV)
     .with("production", () => {
       // save in S3
+      console.log("WRONG ENV");
     })
     .otherwise(() => {
       try {
@@ -20,6 +21,7 @@ export const loadFromDB = () => {
   match(process.env.NODE_ENV)
     .with("production", () => {
       // load from S3
+      console.log("WRONG ENV");
     })
     .otherwise(async () => {
       try {

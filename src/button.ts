@@ -52,6 +52,14 @@ export const createRunnerCarFoundMessageActionRow = () =>
       .setStyle("PRIMARY"),
   ]);
 
+export const createContactRemoveMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("delete-contact")
+      .setLabel("Supprimer ❌")
+      .setStyle("DANGER"),
+  ]);
+
 export const handleButton = (interaction: ButtonInteraction) => {
   if (!interaction.isButton()) return;
   match(interaction.customId)
@@ -173,6 +181,27 @@ export const handleButton = (interaction: ButtonInteraction) => {
           )
         )?.delete();
         store.mutations.removeCar(car.messageId);
+      } catch (err) {
+        console.error(err);
+      }
+    })
+    .with("delete-contact", async () => {
+      if (!store.state.contact) {
+        console.error("ERROR: Trying to remove contact -> contact not found");
+        return;
+      }
+      try {
+        (
+          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch(
+            store.state.contact.vehicleMessageId
+          )
+        )?.delete();
+        (
+          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch(
+            store.state.contact.vehicleRunnerMessageId
+          )
+        )?.delete();
+        store.mutations.setContact();
       } catch (err) {
         console.error(err);
       }

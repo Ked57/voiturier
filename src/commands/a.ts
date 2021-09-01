@@ -1,14 +1,8 @@
-import {
-  CommandInteraction,
-  GuildMember,
-  MessageActionRow,
-  MessageButton,
-  MessageEmbed,
-} from "discord.js";
+import { CommandInteraction, GuildMember } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
-import { postInVehicleRunner } from "../vehicle-runner";
+import { postCarInVehicleRunner } from "../vehicle-runner";
 
 export const handleCommandA = (interaction: CommandInteraction) => {
   const carOption = interaction.options.get("voiture", true);
@@ -35,11 +29,19 @@ export const aCommand = {
     }
     const model = interaction.options.get("voiture")?.value;
     if (!model) {
+      interaction.reply({
+        content: "Il manque le modèle de la voiture",
+        ephemeral: true,
+      });
       return;
     }
     const modelLabel = String(model);
     const owner = (interaction.member as GuildMember).displayName;
     if (!owner) {
+      interaction.reply({
+        content: "Le créateur de la commande n'a pas été trouvé",
+        ephemeral: true,
+      });
       return;
     }
     const reactRow = createCarInitialMessageActionRow();
@@ -48,7 +50,7 @@ export const aCommand = {
       components: [reactRow],
       fetchReply: true,
     });
-    const runnerMessageId = await postInVehicleRunner(String(model));
+    const runnerMessageId = await postCarInVehicleRunner(String(model));
     store.mutations.addCar({
       messageId: reply.id,
       model: modelLabel,

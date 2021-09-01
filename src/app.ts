@@ -4,6 +4,7 @@ import { Client, Collection, Intents } from "discord.js";
 import { handleButton } from "./button";
 import { aCommand } from "./commands/a";
 import { Command, handleCommand } from "./commands/command";
+import { pCommand } from "./commands/p";
 import { initConfig } from "./config";
 import { loadFromDB } from "./db";
 import { initStore } from "./store";
@@ -13,7 +14,7 @@ export const store = initStore();
 
 const rest = new REST({ version: "9" }).setToken(config.TOKEN);
 
-const commandList = [aCommand];
+const commandList = [aCommand, pCommand];
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const commands = new Collection<string, Command>();
 
@@ -50,6 +51,11 @@ client.on("interactionCreate", async (interaction) => {
       }.`
     );
     await loadFromDB();
+    console.log(
+      `Successfully reloaded Voiturier state from ${
+        process.env.NODE_ENV === "production" ? "S3" : "filesystem"
+      }.`
+    );
   } catch (error) {
     console.error(error);
   }

@@ -30,6 +30,12 @@ export type Index = {
   };
 };
 
+export type Contact = {
+  description: string;
+  vehicleMessageId: string;
+  vehicleRunnerMessageId: string;
+};
+
 export type State = {
   cars: Car[];
   dailyCount: number;
@@ -37,6 +43,7 @@ export type State = {
   index: Index;
   prices: number[];
   rdvPlaces: string[];
+  contact?: Contact;
 };
 
 export type Mutation = (...args: any) => void;
@@ -89,6 +96,10 @@ export const initStore = () => {
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
     saveToDB();
   };
+  const setContact = (contact?: Contact) => {
+    state.contact = contact;
+    saveToDB();
+  };
   return {
     state,
     mutations: {
@@ -97,6 +108,7 @@ export const initStore = () => {
       removeCar,
       updateCarState,
       sellCar,
+      setContact,
     },
   };
 };

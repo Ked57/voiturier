@@ -61,7 +61,7 @@ export const createContactRemoveMessageActionRow = () =>
       .setStyle("DANGER"),
   ]);
 
-export const handleButton = (interaction: ButtonInteraction) => {
+export const handleButton = async (interaction: ButtonInteraction) => {
   if (!interaction.isButton()) return;
   match(interaction.customId)
     .with("found", async () => {
@@ -86,20 +86,24 @@ export const handleButton = (interaction: ButtonInteraction) => {
         return;
       }
       store.mutations.updateCarState(interaction.message.id, "FOUND", foundBy);
-      const vehicleMessage = getChannel(
-        config.VEHICLE_CHANNEL_ID
-      )?.messages.cache.find((message) => message.id === car.messageId);
-      const vehicleRunnerMessage = getChannel(
-        config.VEHICLE_RUNNER_CHANNEL_ID
-      )?.messages.cache.find((message) => message.id === car.runnerMessageId);
-      await vehicleMessage?.edit({
-        components: [createCarFoundMessageActionRow()],
-        content: `${car.model} - ${car.for} - **${foundBy}** ✅`,
-      });
-      await vehicleRunnerMessage?.edit({
-        components: [createRunnerCarFoundMessageActionRow()],
-        content: `${car.model} ✅`,
-      });
+      try {
+        const vehicleMessage = (
+          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch()
+        )?.find((message) => message.id === car.messageId);
+        const vehicleRunnerMessage = (
+          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch()
+        )?.find((message) => message.id === car.runnerMessageId);
+        await vehicleMessage?.edit({
+          components: [createCarFoundMessageActionRow()],
+          content: `${car.model} - ${car.for} - **${foundBy}** ✅`,
+        });
+        await vehicleRunnerMessage?.edit({
+          components: [createRunnerCarFoundMessageActionRow()],
+          content: `${car.model} ✅`,
+        });
+      } catch (err) {
+        console.error("ERROR: Trying to interact with found button", err);
+      }
     })
     .with("lost", async () => {
       const car = store.state.cars.find(
@@ -115,20 +119,24 @@ export const handleButton = (interaction: ButtonInteraction) => {
         return;
       }
       store.mutations.updateCarState(interaction.message.id, "IDLE");
-      const vehicleMessage = getChannel(
-        config.VEHICLE_CHANNEL_ID
-      )?.messages.cache.find((message) => message.id === car.messageId);
-      const vehicleRunnerMessage = getChannel(
-        config.VEHICLE_RUNNER_CHANNEL_ID
-      )?.messages.cache.find((message) => message.id === car.runnerMessageId);
-      await vehicleMessage?.edit({
-        components: [createCarInitialMessageActionRow()],
-        content: `${car.model} - ${car.for}`,
-      });
-      await vehicleRunnerMessage?.edit({
-        components: [createRunnerCarInitialMessageActionRow()],
-        content: `${car.model}`,
-      });
+      try {
+        const vehicleMessage = (
+          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch()
+        )?.find((message) => message.id === car.messageId);
+        const vehicleRunnerMessage = (
+          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch()
+        )?.find((message) => message.id === car.runnerMessageId);
+        await vehicleMessage?.edit({
+          components: [createCarInitialMessageActionRow()],
+          content: `${car.model} - ${car.for}`,
+        });
+        await vehicleRunnerMessage?.edit({
+          components: [createRunnerCarInitialMessageActionRow()],
+          content: `${car.model}`,
+        });
+      } catch (err) {
+        console.error("ERROR: Trying to interact with lost button", err);
+      }
     })
     .with("sell", async () => {
       const car = store.state.cars.find(

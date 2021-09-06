@@ -68,7 +68,8 @@ export const pCommand = {
     const reply = await interaction.reply({
       embeds: [
         new MessageEmbed()
-          .setTitle(`Personne contact: ${descriptionLabel}`)
+          .setTitle(`Personne contact`)
+          .setDescription(descriptionLabel)
           .setColor("GREEN"),
       ],
       components: [reactRow],

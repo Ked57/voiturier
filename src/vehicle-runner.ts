@@ -18,7 +18,8 @@ export const postContactInVehicleRunner = async (description: string) => {
   const message = await postMessageInChannel(config.VEHICLE_RUNNER_CHANNEL_ID, {
     embeds: [
       new MessageEmbed()
-        .setTitle(`Personne contact: ${description}`)
+        .setTitle(`Personne contact`)
+        .setDescription(description)
         .setColor("GREEN"),
     ],
     components: [createContactRemoveMessageActionRow()],

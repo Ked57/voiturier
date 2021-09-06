@@ -36,9 +36,14 @@ export type Contact = {
   vehicleRunnerMessageId: string;
 };
 
+export type DailyCount = {
+  count: number;
+  messageId: string;
+};
+
 export type State = {
   cars: Car[];
-  dailyCount: number;
+  dailyCount?: DailyCount;
   runners: Runner[];
   index: Index;
   prices: number[];
@@ -51,7 +56,6 @@ export type Mutation = (...args: any) => void;
 export const initStore = () => {
   const state: State = {
     cars: [],
-    dailyCount: 0,
     runners: [],
     index: {},
     prices: [],
@@ -92,12 +96,18 @@ export const initStore = () => {
     saveToDB();
   };
   const sellCar = (messageId: string) => {
-    state.dailyCount = state.dailyCount + 1;
+    if (state.dailyCount) {
+      state.dailyCount.count = state.dailyCount?.count + 1;
+    }
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
     saveToDB();
   };
   const setContact = (contact?: Contact) => {
     state.contact = contact;
+    saveToDB();
+  };
+  const upsertDailyCount = (dailyCount: DailyCount) => {
+    state.dailyCount = dailyCount;
     saveToDB();
   };
   return {
@@ -109,6 +119,7 @@ export const initStore = () => {
       updateCarState,
       sellCar,
       setContact,
+      upsertDailyCount,
     },
   };
 };

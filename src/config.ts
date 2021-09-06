@@ -6,6 +6,7 @@ const configList = [
   "PERMISSIONS",
   "VEHICLE_CHANNEL_ID",
   "VEHICLE_RUNNER_CHANNEL_ID",
+  "GLOBAL_COUNT_CHANNEL_ID",
 ];
 
 type Config = {
@@ -16,6 +17,7 @@ type Config = {
   PERMISSIONS: string;
   VEHICLE_CHANNEL_ID: string;
   VEHICLE_RUNNER_CHANNEL_ID: string;
+  GLOBAL_COUNT_CHANNEL_ID: string;
 };
 
 const isConfig = (config: Partial<Config>): config is Config =>

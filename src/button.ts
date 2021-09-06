@@ -7,6 +7,7 @@ import {
 import { match } from "ts-pattern";
 import { config, store } from "./app";
 import { getChannel } from "./channel";
+import { updateDailyGlobalCount } from "./global-count";
 
 export const createCarInitialMessageActionRow = () =>
   new MessageActionRow().addComponents([
@@ -63,7 +64,7 @@ export const createContactRemoveMessageActionRow = () =>
 export const handleButton = (interaction: ButtonInteraction) => {
   if (!interaction.isButton()) return;
   match(interaction.customId)
-    .with("found", () => {
+    .with("found", async () => {
       const foundBy = (interaction.member as GuildMember).displayName;
       if (!foundBy) {
         console.error(
@@ -91,16 +92,16 @@ export const handleButton = (interaction: ButtonInteraction) => {
       const vehicleRunnerMessage = getChannel(
         config.VEHICLE_RUNNER_CHANNEL_ID
       )?.messages.cache.find((message) => message.id === car.runnerMessageId);
-      vehicleMessage?.edit({
+      await vehicleMessage?.edit({
         components: [createCarFoundMessageActionRow()],
         content: `${car.model} - ${car.for} - **${foundBy}** ✅`,
       });
-      vehicleRunnerMessage?.edit({
+      await vehicleRunnerMessage?.edit({
         components: [createRunnerCarFoundMessageActionRow()],
         content: `${car.model} ✅`,
       });
     })
-    .with("lost", () => {
+    .with("lost", async () => {
       const car = store.state.cars.find(
         (car) =>
           car.messageId === interaction.message.id ||
@@ -120,11 +121,11 @@ export const handleButton = (interaction: ButtonInteraction) => {
       const vehicleRunnerMessage = getChannel(
         config.VEHICLE_RUNNER_CHANNEL_ID
       )?.messages.cache.find((message) => message.id === car.runnerMessageId);
-      vehicleMessage?.edit({
+      await vehicleMessage?.edit({
         components: [createCarInitialMessageActionRow()],
         content: `${car.model} - ${car.for}`,
       });
-      vehicleRunnerMessage?.edit({
+      await vehicleRunnerMessage?.edit({
         components: [createRunnerCarInitialMessageActionRow()],
         content: `${car.model}`,
       });
@@ -154,6 +155,7 @@ export const handleButton = (interaction: ButtonInteraction) => {
 
         store.mutations.sellCar(car.messageId);
         store.mutations.removeCar(car.messageId);
+        await updateDailyGlobalCount(store.state.dailyCount?.count || 1);
       } catch (err) {
         console.error(err);
       }

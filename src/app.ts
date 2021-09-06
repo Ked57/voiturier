@@ -7,6 +7,7 @@ import { Command, handleCommand } from "./commands/command";
 import { pCommand } from "./commands/p";
 import { initConfig } from "./config";
 import { loadFromDB } from "./db";
+import { createDailyGlobalCount } from "./global-count";
 import { initStore } from "./store";
 
 export const config = initConfig();
@@ -62,3 +63,11 @@ client.on("interactionCreate", async (interaction) => {
 })();
 
 client.login(config.TOKEN);
+
+setInterval(async () => {
+  const date = new Date();
+  if (date.getHours() !== 2 || date.getMinutes() >= 1) {
+    return;
+  }
+  await createDailyGlobalCount();
+});

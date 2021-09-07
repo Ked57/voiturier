@@ -6,7 +6,7 @@ executors:
       - image: circleci/node:16.6.0
   docker-executor:
     docker:
-      - image: docker:stable
+      - image: docker:19.03.13
 
 jobs:
   install-dependencies:
@@ -45,7 +45,8 @@ jobs:
         type: string
     steps:
       - checkout
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.13
       - attach_workspace:
           at: ./
       - run:

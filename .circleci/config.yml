@@ -49,10 +49,10 @@ jobs:
           at: ./
       - run:
           command: |
-            docker login rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1 -u nologin -p $SCW_SECRET_TOKEN
-            docker build . -t voiturier
-            docker tag voiturier:latest rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
-            docker push rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
+            sudo docker login rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1 -u nologin -p $SCW_SECRET_TOKEN
+            sudo docker build . -t voiturier
+            sudo docker tag voiturier:latest rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
+            sudo docker push rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
 
 workflows:
   version: 2

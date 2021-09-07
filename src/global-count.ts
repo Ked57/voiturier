@@ -7,12 +7,12 @@ export const createDailyGlobalCount = async () => {
   const date = new Date().toLocaleDateString("FR-fr", { dateStyle: "full" });
   const messageId = await postMessageInChannel(config.GLOBAL_COUNT_CHANNEL_ID, {
     embeds: [
-      new MessageEmbed({ title: date }).setDescription(`Voitures: ${0}
-    Chiffre d'affaire: ${0}$`),
+      new MessageEmbed({ title: date }).setDescription(`Voitures: ${1}
+    Chiffre d'affaire: ${2280}$`),
     ],
   });
   store.mutations.upsertDailyCount({
-    count: 0,
+    count: 1,
     messageId: messageId.id,
   });
   console.log("Reset daily global count successfully");
@@ -40,6 +40,12 @@ export const updateDailyGlobalCount = async (count: number) => {
     }
     countMessage = countChannel?.messages.cache.last() as Message;
     messageId = countMessage.id;
+  }
+  const date = new Date();
+  const messageDate = new Date(countMessage.embeds[0].title || "");
+  if (date.getHours() >= 2 && messageDate.getDay() !== date.getDay()) {
+    await createDailyGlobalCount();
+    return;
   }
   await countMessage.edit({
     embeds: [

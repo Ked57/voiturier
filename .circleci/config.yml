@@ -1,0 +1,98 @@
+version: 2.1
+
+executors:
+  main-executor:
+    docker:
+      - image: circleci/node:16.6.0
+  docker-executor:
+    docker:
+      - image: docker:17.05.0-ce-git
+
+jobs:
+  install-dependencies:
+    executor: main-executor
+    steps:
+      - checkout
+      - run: yarn install
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - node_modules
+
+  check-format:
+    executor: main-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - run: yarn prettier:check
+
+  build:
+    executor: main-executor
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - run: yarn build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - dist
+  build-and-deploy-docker-image:
+    executor: docker-executor
+    parameters:
+      tag:
+        type: string
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ./
+      - run:
+          command: |
+            docker login rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1 -u nologin -p $SCW_SECRET_TOKEN
+            docker build . -t voiturier
+            docker tag voiturier:latest rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
+            docker push rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
+
+workflows:
+  version: 2
+
+  deploy:
+    jobs:
+      - install-dependencies:
+          filters:
+            tags:
+              only: /.*/
+      - check-format:
+          requires:
+            - install-dependencies
+          filters:
+            tags:
+              only: /.*/
+      - build:
+          requires:
+            - install-dependencies
+          filters:
+            tags:
+              only: /.*/
+      - build-and-deploy-docker-image:
+          name: build-and-deploy-docker-image-staging
+          tag: latest-beta
+          requires:
+            - build
+            - check-format
+          filters:
+            branches:
+              only: master
+            tags:
+              ignore: /.*/
+      - build-and-deploy-docker-image:
+          tag: latest
+          requires:
+            - build
+            - check-format
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /v.+/

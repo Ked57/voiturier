@@ -63,11 +63,3 @@ client.on("interactionCreate", (interaction) => {
 })();
 
 client.login(config.TOKEN);
-
-setInterval(async () => {
-  const date = new Date();
-  if (date.getHours() !== 2 || date.getMinutes() >= 1) {
-    return;
-  }
-  await createDailyGlobalCount();
-});

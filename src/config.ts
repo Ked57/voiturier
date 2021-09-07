@@ -1,5 +1,4 @@
 const configList = [
-  "HASURA_ADMIN_SECRET",
   "CLIENT_ID",
   "GUILD_ID",
   "TOKEN",
@@ -10,7 +9,6 @@ const configList = [
 ];
 
 type Config = {
-  HASURA_ADMIN_SECRET: string;
   CLIENT_ID: string;
   GUILD_ID: string;
   TOKEN: string;

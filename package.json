@@ -10,6 +10,7 @@
   "scripts": {
     "dev": "nodemon --watch ./src --exec ts-node -r dotenv/config ./src/app.ts",
     "start": "node ./dist/app.js",
+    "build": "tsc",
     "prettier": "prettier *.json \"src/**/*.ts\"  \".circleci/config.yml\"",
     "prettier:check": "npm run prettier -- --check",
     "prettier:write": "npm run prettier -- --write"

@@ -1,12 +1,17 @@
+
 import { writeFile, readFile } from "fs/promises";
 import { match } from "ts-pattern";
-import { store } from "./app";
+import { config, store } from "./app";
+global.fetch = fetch as any;
 
-export const saveToDB = () => {
+export const saveToDB = async () => {
   match(process.env.NODE_ENV)
-    .with("production", () => {
-      // save in S3
-      console.log("WRONG ENV");
+    .with("production", async () => {
+      try {
+        // writeFile("./db.json", JSON.stringify(store.state));
+      } catch (err) {
+        console.error("ERROR: Saving db file to fs -> ", err);
+      }
     })
     .otherwise(() => {
       try {
@@ -17,7 +22,7 @@ export const saveToDB = () => {
     });
 };
 
-export const loadFromDB = () => {
+export const loadFromDB = async () => {
   match(process.env.NODE_ENV)
     .with("production", () => {
       // load from S3

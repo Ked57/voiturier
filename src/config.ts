@@ -6,6 +6,9 @@ const configList = [
   "VEHICLE_CHANNEL_ID",
   "VEHICLE_RUNNER_CHANNEL_ID",
   "GLOBAL_COUNT_CHANNEL_ID",
+  "SCALEWAY_ACCESS_KEY",
+  "SCALEWAY_SECRET_KEY",
+  "SCALEWAY_BUCKET",
 ];
 
 type Config = {
@@ -16,6 +19,9 @@ type Config = {
   VEHICLE_CHANNEL_ID: string;
   VEHICLE_RUNNER_CHANNEL_ID: string;
   GLOBAL_COUNT_CHANNEL_ID: string;
+  SCALEWAY_ACCESS_KEY: string;
+  SCALEWAY_SECRET_KEY: string;
+  SCALEWAY_BUCKET: string;
 };
 
 const isConfig = (config: Partial<Config>): config is Config =>

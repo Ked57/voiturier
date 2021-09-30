@@ -7,7 +7,6 @@ const configList = [
   "VEHICLE_RUNNER_CHANNEL_ID",
   "GLOBAL_COUNT_CHANNEL_ID",
   "DB_CHANNEL_ID",
-  "DB_MESSAGE_ID",
 ];
 
 type Config = {
@@ -19,7 +18,6 @@ type Config = {
   VEHICLE_RUNNER_CHANNEL_ID: string;
   GLOBAL_COUNT_CHANNEL_ID: string;
   DB_CHANNEL_ID: string;
-  DB_MESSAGE_ID: string;
 };
 
 const isConfig = (config: Partial<Config>): config is Config =>

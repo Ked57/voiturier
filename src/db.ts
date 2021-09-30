@@ -9,7 +9,7 @@ export const saveToDB = async () => {
   match(process.env.NODE_ENV)
     .with("production", async () => {
       try {
-        await saveFile(config.DB_MESSAGE_ID);
+        await saveFile();
       } catch (err) {
         console.error("ERROR: Saving db file to Discord -> ", err);
         throw err;
@@ -45,22 +45,23 @@ export const loadFromDB = async () => {
     });
 };
 
-export const saveFile = async (storedMessage?: string) => {
+export const saveFile = async () => {
   let message: Message;
 
   const channel = await getChannel(config.DB_CHANNEL_ID);
-  if (!storedMessage) {
+  if (typeof channel.lastMessageId !== "string") {
     console.error("Saving db file -> No db message found");
     message = await channel.send("db");
-    console.log(
-      "REMEMBER TO UPDATE ENV VARIABLE DB_MESSAGE_ID WITH",
-      message.id
-    );
   } else {
-    message = await channel.messages.fetch(storedMessage);
+    try {
+      message = await channel.messages.fetch(channel.lastMessageId);
+    } catch (err) {
+      console.error("Saving db file -> No db message found");
+      message = await channel.send("db");
+    }
     message.removeAttachments();
   }
-  message.edit({
+  await message.edit({
     files: [
       {
         attachment: Buffer.from(JSON.stringify(store.state)),
@@ -72,11 +73,10 @@ export const saveFile = async (storedMessage?: string) => {
 };
 
 export const getFile = async () => {
-  console.log("config.DB_MESSAGE_ID", config.DB_MESSAGE_ID);
   const channel = await getChannel(config.DB_CHANNEL_ID);
   let message: Message;
   try {
-    message = await channel.messages.fetch(config.DB_MESSAGE_ID);
+    message = await channel.messages.fetch(channel.lastMessageId as string);
   } catch (err) {
     console.error("Loading db file -> No db message found", err);
     message = await saveFile();

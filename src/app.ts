@@ -50,7 +50,6 @@ client.on("interactionCreate", (interaction) => {
     console.error(error);
   }
 })();
-
 client.login(config.TOKEN).then(async () => {
   console.log(
     `Started loading Voiturier state from ${

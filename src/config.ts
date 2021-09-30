@@ -8,6 +8,8 @@ const configList = [
   "GLOBAL_COUNT_CHANNEL_ID",
   "SCALEWAY_ACCESS_KEY",
   "SCALEWAY_SECRET_KEY",
+  "SCALEWAY_HOST",
+  "SCALEWAY_REGION",
   "SCALEWAY_BUCKET",
 ];
 
@@ -21,6 +23,8 @@ type Config = {
   GLOBAL_COUNT_CHANNEL_ID: string;
   SCALEWAY_ACCESS_KEY: string;
   SCALEWAY_SECRET_KEY: string;
+  SCALEWAY_HOST: string;
+  SCALEWAY_REGION: string;
   SCALEWAY_BUCKET: string;
 };
 

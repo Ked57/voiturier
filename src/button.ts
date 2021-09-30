@@ -88,10 +88,12 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       store.mutations.updateCarState(interaction.message.id, "FOUND", foundBy);
       try {
         const vehicleMessage = (
-          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch()
+          await (await getChannel(config.VEHICLE_CHANNEL_ID))?.messages.fetch()
         )?.find((message) => message.id === car.messageId);
         const vehicleRunnerMessage = (
-          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch()
+          await (
+            await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
+          )?.messages.fetch()
         )?.find((message) => message.id === car.runnerMessageId);
         await vehicleMessage?.edit({
           components: [createCarFoundMessageActionRow()],
@@ -121,10 +123,12 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       store.mutations.updateCarState(interaction.message.id, "IDLE");
       try {
         const vehicleMessage = (
-          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch()
+          await (await getChannel(config.VEHICLE_CHANNEL_ID))?.messages.fetch()
         )?.find((message) => message.id === car.messageId);
         const vehicleRunnerMessage = (
-          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch()
+          await (
+            await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
+          )?.messages.fetch()
         )?.find((message) => message.id === car.runnerMessageId);
         await vehicleMessage?.edit({
           components: [createCarInitialMessageActionRow()],
@@ -151,14 +155,14 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       }
       try {
         (
-          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch(
-            car.messageId
-          )
+          await (
+            await getChannel(config.VEHICLE_CHANNEL_ID)
+          )?.messages.fetch(car.messageId)
         )?.delete();
         (
-          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch(
-            car.runnerMessageId
-          )
+          await (
+            await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
+          )?.messages.fetch(car.runnerMessageId)
         )?.delete();
 
         store.mutations.sellCar(car.messageId);
@@ -181,14 +185,14 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       }
       try {
         (
-          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch(
-            car.messageId
-          )
+          await (
+            await getChannel(config.VEHICLE_CHANNEL_ID)
+          )?.messages.fetch(car.messageId)
         )?.delete();
         (
-          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch(
-            car.runnerMessageId
-          )
+          await (
+            await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
+          )?.messages.fetch(car.runnerMessageId)
         )?.delete();
         store.mutations.removeCar(car.messageId);
       } catch (err) {
@@ -202,14 +206,14 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       }
       try {
         (
-          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch(
-            store.state.contact.vehicleMessageId
-          )
+          await (
+            await getChannel(config.VEHICLE_CHANNEL_ID)
+          )?.messages.fetch(store.state.contact.vehicleMessageId)
         )?.delete();
         (
-          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch(
-            store.state.contact.vehicleRunnerMessageId
-          )
+          await (
+            await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
+          )?.messages.fetch(store.state.contact.vehicleRunnerMessageId)
         )?.delete();
         store.mutations.setContact();
       } catch (err) {

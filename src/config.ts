@@ -11,6 +11,8 @@ const configList = [
   "SCALEWAY_HOST",
   "SCALEWAY_REGION",
   "SCALEWAY_BUCKET",
+  "DB_CHANNEL_ID",
+  "DB_MESSAGE_ID",
 ];
 
 type Config = {
@@ -26,6 +28,8 @@ type Config = {
   SCALEWAY_HOST: string;
   SCALEWAY_REGION: string;
   SCALEWAY_BUCKET: string;
+  DB_CHANNEL_ID: string;
+  DB_MESSAGE_ID: string;
 };
 
 const isConfig = (config: Partial<Config>): config is Config =>

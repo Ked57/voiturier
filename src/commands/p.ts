@@ -49,14 +49,14 @@ export const pCommand = {
     if (store.state.contact) {
       try {
         (
-          await getChannel(config.VEHICLE_CHANNEL_ID)?.messages.fetch(
-            store.state.contact.vehicleMessageId
-          )
+          await (
+            await getChannel(config.VEHICLE_CHANNEL_ID)
+          )?.messages.fetch(store.state.contact.vehicleMessageId)
         )?.delete();
         (
-          await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)?.messages.fetch(
-            store.state.contact.vehicleRunnerMessageId
-          )
+          await (
+            await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
+          )?.messages.fetch(store.state.contact.vehicleRunnerMessageId)
         )?.delete();
         store.mutations.setContact();
       } catch (err) {

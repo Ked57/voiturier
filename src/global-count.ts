@@ -28,7 +28,7 @@ export const updateDailyGlobalCount = async (count: number) => {
     console.error("ERROR: couldn't find dailyCount messageId");
     return;
   }
-  const countChannel = getChannel(config.GLOBAL_COUNT_CHANNEL_ID);
+  const countChannel = await getChannel(config.GLOBAL_COUNT_CHANNEL_ID);
   let countMessage = (await countChannel?.messages.fetch())?.find(
     (message) => message.id === messageId
   );

@@ -62,6 +62,7 @@ export const initStore = () => {
     rdvPlaces: [],
   };
   const loadState = (loadedState: State) => {
+    console.log("loading state ...", loadedState);
     Object.entries(loadedState).map(([key, value]) =>
       Object.assign(state, { [key]: value })
     );

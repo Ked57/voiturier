@@ -69,11 +69,9 @@ export const initStore = () => {
   };
   const addCar = (car: Car) => {
     state.cars = [...state.cars, car];
-    saveToDB();
   };
   const removeCar = (messageId: string) => {
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
-    saveToDB();
   };
   const updateCarState = (
     messageId: string,
@@ -94,22 +92,18 @@ export const initStore = () => {
       ...state.cars.filter((car) => car.messageId !== messageId),
       { ...car, state: carState, foundBy },
     ];
-    saveToDB();
   };
   const sellCar = (messageId: string) => {
     if (state.dailyCount) {
       state.dailyCount.count = state.dailyCount?.count + 1;
     }
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
-    saveToDB();
   };
   const setContact = (contact?: Contact) => {
     state.contact = contact;
-    saveToDB();
   };
   const upsertDailyCount = (dailyCount: DailyCount) => {
     state.dailyCount = dailyCount;
-    saveToDB();
   };
   return {
     state,

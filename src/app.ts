@@ -6,7 +6,7 @@ import { aCommand } from "./commands/a";
 import { Command, handleCommand } from "./commands/command";
 import { pCommand } from "./commands/p";
 import { initConfig } from "./config";
-import { loadFromDB } from "./db";
+import { loadFromDB, saveToDB } from "./db";
 import { createDailyGlobalCount } from "./global-count";
 import { initStore } from "./store";
 
@@ -57,6 +57,7 @@ client.login(config.TOKEN).then(async () => {
     }.`
   );
   await loadFromDB();
+  setInterval(() => saveToDB(), 60000);
   console.log(
     `Successfully reloaded Voiturier state from ${
       process.env.NODE_ENV === "production" ? "Discord" : "filesystem"

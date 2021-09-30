@@ -1,10 +1,10 @@
+import { TextBasedChannels } from "discord.js";
 import { client } from "./app";
 
-export const getChannel = (channelId: string) => {
-  const channel = client.channels.cache.get(channelId);
-  if (!channel || !channel.isText()) {
-    console.error("ERROR: Channel doesn't exist or isn't text based");
-    return;
+export const getChannel = async (channelId: string) => {
+  const channel = await client.channels.fetch(channelId);
+  if (!channel) {
+    throw new Error("ERROR: Channel doesn't exist or isn't text based");
   }
-  return channel;
+  return channel as TextBasedChannels;
 };

@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@types/node": "^16.7.2",
+    "@types/node-fetch": "2.5",
     "dotenv": "^10.0.0",
     "nodemon": "^2.0.12",
     "prettier": "^2.3.2",
@@ -28,6 +29,7 @@
     "@discordjs/rest": "^0.1.0-canary.0",
     "discord.js": "^13.1.0",
     "graphql": "^15.5.1",
+    "node-fetch": "2.6",
     "ts-pattern": "^3.2.5"
   }
 }

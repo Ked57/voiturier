@@ -46,20 +46,21 @@ client.on("interactionCreate", (interaction) => {
       }
     );
     console.log("Successfully reloaded Voiturier (/) commands.");
-    console.log(
-      `Started loading Voiturier state from ${
-        process.env.NODE_ENV === "production" ? "S3" : "filesystem"
-      }.`
-    );
-    await loadFromDB();
-    console.log(
-      `Successfully reloaded Voiturier state from ${
-        process.env.NODE_ENV === "production" ? "S3" : "filesystem"
-      }.`
-    );
   } catch (error) {
     console.error(error);
   }
 })();
 
-client.login(config.TOKEN);
+client.login(config.TOKEN).then(async () => {
+  console.log(
+    `Started loading Voiturier state from ${
+      process.env.NODE_ENV === "production" ? "Discord" : "filesystem"
+    }.`
+  );
+  await loadFromDB();
+  console.log(
+    `Successfully reloaded Voiturier state from ${
+      process.env.NODE_ENV === "production" ? "Discord" : "filesystem"
+    }.`
+  );
+});

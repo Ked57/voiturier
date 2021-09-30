@@ -24,10 +24,6 @@ export const pCommand = {
     ),
   execute: async (interaction: CommandInteraction) => {
     if (interaction.channelId !== config.VEHICLE_CHANNEL_ID) {
-      interaction.reply({
-        content: "La commande n'a pas été éxécutée dans le bon channel",
-        ephemeral: true,
-      });
       return;
     }
     const description = interaction.options.get("description")?.value;

@@ -24,6 +24,13 @@ client.on("ready", () => {
 });
 
 client.on("interactionCreate", (interaction) => {
+  if (
+    [config.VEHICLE_CHANNEL_ID, config.VEHICLE_RUNNER_CHANNEL_ID].find(
+      (id) => id !== interaction.channelId
+    )
+  ) {
+    return;
+  }
   if (interaction.isCommand()) {
     handleCommand(commands, interaction);
   } else if (interaction.isButton()) {

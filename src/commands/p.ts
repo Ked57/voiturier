@@ -5,14 +5,6 @@ import { createContactRemoveMessageActionRow } from "../button";
 import { postContactInVehicleRunner } from "../vehicle-runner";
 import { getChannel } from "../channel";
 
-export const handleCommandP = (interaction: CommandInteraction) => {
-  const carOption = interaction.options.get("voiture", true);
-  if (!carOption || !carOption.message) {
-    return;
-  }
-  interaction.reply(carOption.message.content);
-};
-
 export const pCommand = {
   data: new SlashCommandBuilder()
     .setName("p")

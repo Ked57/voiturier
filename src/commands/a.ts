@@ -4,14 +4,6 @@ import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
 import { postCarInVehicleRunner } from "../vehicle-runner";
 
-export const handleCommandA = (interaction: CommandInteraction) => {
-  const carOption = interaction.options.get("voiture", true);
-  if (!carOption || !carOption.message) {
-    return;
-  }
-  interaction.reply(carOption.message.content);
-};
-
 export const aCommand = {
   data: new SlashCommandBuilder()
     .setName("a")

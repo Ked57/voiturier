@@ -3,6 +3,7 @@ import {
   GuildMember,
   MessageActionRow,
   MessageButton,
+  MessageEmbed,
 } from "discord.js";
 import { match } from "ts-pattern";
 import { config, store } from "./app";
@@ -57,6 +58,29 @@ export const createContactRemoveMessageActionRow = () =>
   new MessageActionRow().addComponents([
     new MessageButton()
       .setCustomId("delete-contact")
+      .setLabel("Supprimer ❌")
+      .setStyle("DANGER"),
+  ]);
+
+export const createCountRunnerMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("plus-one-runner")
+      .setLabel("+1 ➕")
+      .setStyle("PRIMARY"),
+    new MessageButton()
+      .setCustomId("minus-one-runner")
+      .setLabel("-1 ➖")
+      .setStyle("PRIMARY"),
+    new MessageButton()
+      .setCustomId("new-runner")
+      .setLabel("New 🆕")
+      .setStyle("PRIMARY"),
+  ]);
+export const createInfoRunnerMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("delete-runner")
       .setLabel("Supprimer ❌")
       .setStyle("DANGER"),
   ]);
@@ -219,6 +243,272 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       } catch (err) {
         console.error(err);
       }
+    })
+    .with("plus-one-runner", async () => {
+      const messageId = interaction.message.id;
+      const runner = store.state.runners.find(
+        (runner) =>
+          runner.countMessageId === messageId ||
+          runner.infoMessageId === messageId
+      );
+      if (!runner) {
+        interaction.reply({ content: "Runner inconnu", ephemeral: true });
+        return;
+      }
+      const updatedRunner = store.mutations.upsertRunner({
+        ...runner,
+        count: {
+          ongoing: runner.count.ongoing + 1,
+          total: runner.count.total + 1,
+        },
+      });
+
+      if (!updatedRunner) {
+        interaction.reply({ content: "Runner inconnu" });
+        return;
+      }
+      const countChannel = await getChannel(config.COUNT_RUNNER_CHANNEL_ID);
+      await countChannel.messages.cache
+        .get(updatedRunner.countMessageId)
+        ?.edit({
+          embeds: [
+            new MessageEmbed()
+              .setTitle(updatedRunner.name)
+              .setColor("GREEN")
+              .setFields(
+                {
+                  name: "Téléphone",
+                  value: updatedRunner.phoneNumber,
+                  inline: true,
+                },
+                {
+                  name: "Compteur",
+                  value: `${updatedRunner.count.ongoing}`,
+                  inline: true,
+                }
+              ),
+          ],
+        });
+      const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
+      await infoChannel.messages.cache.get(updatedRunner.infoMessageId)?.edit({
+        embeds: [
+          new MessageEmbed()
+            .setTitle(updatedRunner.name)
+            .setColor("GREEN")
+            .setFields(
+              {
+                name: "Téléphone",
+                value: updatedRunner.phoneNumber,
+                inline: true,
+              },
+              { name: "Prix", value: `${updatedRunner.price}$`, inline: true },
+              {
+                name: "Livraison",
+                value: `${updatedRunner.rdvPlace}`,
+                inline: true,
+              },
+              {
+                name: "Compteur",
+                value: `${updatedRunner.count.ongoing}`,
+                inline: true,
+              },
+              {
+                name: "Total",
+                value: `${updatedRunner.count.total}`,
+                inline: true,
+              },
+              {
+                name: "A payer",
+                value: `${
+                  updatedRunner.count.ongoing * (updatedRunner.price || 0)
+                }$`,
+                inline: true,
+              }
+            ),
+        ],
+      });
+    })
+    .with("minus-one-runner", async () => {
+      const messageId = interaction.message.id;
+      const runner = store.state.runners.find(
+        (runner) =>
+          runner.countMessageId === messageId ||
+          runner.infoMessageId === messageId
+      );
+      if (!runner) {
+        interaction.reply({ content: "Runner inconnu" });
+        return;
+      }
+      const updatedRunner = store.mutations.upsertRunner({
+        ...runner,
+        count: {
+          ongoing: runner.count.ongoing - 1,
+          total: runner.count.total - 1,
+        },
+      });
+
+      if (!updatedRunner) {
+        interaction.reply({ content: "Runner inconnu" });
+        return;
+      }
+      const countChannel = await getChannel(config.COUNT_RUNNER_CHANNEL_ID);
+      await countChannel.messages.cache
+        .get(updatedRunner.countMessageId)
+        ?.edit({
+          embeds: [
+            new MessageEmbed()
+              .setTitle(updatedRunner.name)
+              .setColor("GREEN")
+              .setFields(
+                {
+                  name: "Téléphone",
+                  value: updatedRunner.phoneNumber,
+                  inline: true,
+                },
+                {
+                  name: "Compteur",
+                  value: `${updatedRunner.count.ongoing}`,
+                  inline: true,
+                }
+              ),
+          ],
+        });
+      const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
+      await infoChannel.messages.cache.get(updatedRunner.infoMessageId)?.edit({
+        embeds: [
+          new MessageEmbed()
+            .setTitle(updatedRunner.name)
+            .setColor("GREEN")
+            .setFields(
+              {
+                name: "Téléphone",
+                value: updatedRunner.phoneNumber,
+                inline: true,
+              },
+              { name: "Prix", value: `${updatedRunner.price}$`, inline: true },
+              {
+                name: "Livraison",
+                value: `${updatedRunner.rdvPlace}`,
+                inline: true,
+              },
+              {
+                name: "Compteur",
+                value: `${updatedRunner.count.ongoing}`,
+                inline: true,
+              },
+              {
+                name: "Total",
+                value: `${updatedRunner.count.total}`,
+                inline: true,
+              },
+              {
+                name: "A payer",
+                value: `${
+                  updatedRunner.count.ongoing * (updatedRunner.price || 0)
+                }$`,
+                inline: true,
+              }
+            ),
+        ],
+      });
+    })
+    .with("new-runner", async () => {
+      const messageId = interaction.message.id;
+      const runner = store.state.runners.find(
+        (runner) =>
+          runner.countMessageId === messageId ||
+          runner.infoMessageId === messageId
+      );
+      if (!runner) {
+        interaction.reply({ content: "Runner inconnu" });
+        return;
+      }
+      const updatedRunner = store.mutations.upsertRunner({
+        ...runner,
+        count: { ...runner.count, ongoing: 0 },
+      });
+
+      if (!updatedRunner) {
+        interaction.reply({ content: "Runner inconnu", ephemeral: true });
+        return;
+      }
+      const countChannel = await getChannel(config.COUNT_RUNNER_CHANNEL_ID);
+      await countChannel.messages.cache
+        .get(updatedRunner.countMessageId)
+        ?.edit({
+          embeds: [
+            new MessageEmbed()
+              .setTitle(updatedRunner.name)
+              .setColor("GREEN")
+              .setFields(
+                {
+                  name: "Téléphone",
+                  value: updatedRunner.phoneNumber,
+                  inline: true,
+                },
+                {
+                  name: "Compteur",
+                  value: `${updatedRunner.count.ongoing}`,
+                  inline: true,
+                }
+              ),
+          ],
+        });
+      const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
+      await infoChannel.messages.cache.get(updatedRunner.infoMessageId)?.edit({
+        embeds: [
+          new MessageEmbed()
+            .setTitle(updatedRunner.name)
+            .setColor("GREEN")
+            .setFields(
+              {
+                name: "Téléphone",
+                value: updatedRunner.phoneNumber,
+                inline: true,
+              },
+              { name: "Prix", value: `${updatedRunner.price}$`, inline: true },
+              {
+                name: "Livraison",
+                value: `${updatedRunner.rdvPlace}`,
+                inline: true,
+              },
+              {
+                name: "Compteur",
+                value: `${updatedRunner.count.ongoing}`,
+                inline: true,
+              },
+              {
+                name: "Total",
+                value: `${updatedRunner.count.total}`,
+                inline: true,
+              },
+              {
+                name: "A payer",
+                value: `${
+                  updatedRunner.count.ongoing * (updatedRunner.price || 0)
+                }$`,
+                inline: true,
+              }
+            ),
+        ],
+      });
+    })
+    .with("delete-runner", async () => {
+      const messageId = interaction.message.id;
+      const runner = store.state.runners.find(
+        (runner) =>
+          runner.countMessageId === messageId ||
+          runner.infoMessageId === messageId
+      );
+      if (!runner) {
+        interaction.reply({ content: "Runner inconnu", ephemeral: true });
+        return;
+      }
+      const countChannel = await getChannel(config.COUNT_RUNNER_CHANNEL_ID);
+      countChannel.messages.cache.get(runner.countMessageId)?.delete();
+      const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
+      await infoChannel.messages.cache.get(runner.infoMessageId)?.delete();
+      store.mutations.removeRunner(runner);
     })
     .otherwise((value) =>
       console.log("couldnt handle button with customId", value)

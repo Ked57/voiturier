@@ -105,9 +105,15 @@ export const initStore = () => {
   };
   const upsertRunner = (runner: Runner) => {
     state.runners = [
-      ...state.runners.filter((r) => r.name !== runner.name),
+      ...state.runners.filter((r) => r.infoMessageId !== runner.infoMessageId),
       runner,
     ];
+    return runner;
+  };
+  const removeRunner = (runner: Runner) => {
+    state.runners = state.runners.filter(
+      (r) => r.infoMessageId !== runner.infoMessageId
+    );
   };
   const removePrice = (price: number) => {
     state.prices = state.prices.filter((p) => p !== price);
@@ -132,6 +138,7 @@ export const initStore = () => {
       setContact,
       upsertDailyCount,
       upsertRunner,
+      removeRunner,
       removePrice,
       insertPrice,
       removePlace,

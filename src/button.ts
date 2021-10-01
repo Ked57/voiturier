@@ -316,6 +316,13 @@ export const handleButton = async (interaction: ButtonInteraction) => {
                 name: "Total",
                 value: `${updatedRunner.count.total}`,
                 inline: true,
+              },
+              {
+                name: "A payer",
+                value: `${
+                  updatedRunner.count.ongoing * (updatedRunner.price || 0)
+                }$`,
+                inline: true,
               }
             ),
         ],
@@ -393,6 +400,13 @@ export const handleButton = async (interaction: ButtonInteraction) => {
                 name: "Total",
                 value: `${updatedRunner.count.total}`,
                 inline: true,
+              },
+              {
+                name: "A payer",
+                value: `${
+                  updatedRunner.count.ongoing * (updatedRunner.price || 0)
+                }$`,
+                inline: true,
               }
             ),
         ],
@@ -466,6 +480,13 @@ export const handleButton = async (interaction: ButtonInteraction) => {
               {
                 name: "Total",
                 value: `${updatedRunner.count.total}`,
+                inline: true,
+              },
+              {
+                name: "A payer",
+                value: `${
+                  updatedRunner.count.ongoing * (updatedRunner.price || 0)
+                }$`,
                 inline: true,
               }
             ),

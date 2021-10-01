@@ -9,6 +9,7 @@ import { runnerCommand } from "./commands/runner";
 import { initConfig } from "./config";
 import { loadFromDB, saveToDB } from "./db";
 import { createDailyGlobalCount } from "./global-count";
+import { handleSelectMenu } from "./select-menu";
 import { initStore } from "./store";
 
 export const config = initConfig();
@@ -24,11 +25,21 @@ client.on("ready", () => {
   console.log(`Logged in as ${client.user?.tag}!`);
 });
 
-client.on("interactionCreate", (interaction) => {
-  if (interaction.isCommand()) {
-    handleCommand(commands, interaction);
-  } else if (interaction.isButton()) {
-    handleButton(interaction);
+client.on("interactionCreate", async (interaction) => {
+  try {
+    if (interaction.isCommand()) {
+      await handleCommand(commands, interaction);
+    }
+    if (interaction.isButton()) {
+      await handleButton(interaction);
+      return interaction.deferUpdate();
+    }
+    if (interaction.isSelectMenu()) {
+      await handleSelectMenu(interaction);
+      return interaction.deferUpdate();
+    }
+  } catch (err) {
+    console.error(err);
   }
 });
 
@@ -58,7 +69,7 @@ client.login(config.TOKEN).then(async () => {
     }.`
   );
   await loadFromDB();
-  setInterval(() => saveToDB(), 60000);
+  setInterval(() => saveToDB(), 15000);
   console.log(
     `Successfully reloaded Voiturier state from ${
       process.env.NODE_ENV === "production" ? "Discord" : "filesystem"

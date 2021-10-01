@@ -61,6 +61,29 @@ export const createContactRemoveMessageActionRow = () =>
       .setStyle("DANGER"),
   ]);
 
+export const createCountRunnerMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("plus-one-runner")
+      .setLabel("+1 ➕")
+      .setStyle("PRIMARY"),
+    new MessageButton()
+      .setCustomId("minus-one-runner")
+      .setLabel("-1 ➖")
+      .setStyle("PRIMARY"),
+    new MessageButton()
+      .setCustomId("new-runner")
+      .setLabel("New 🆕")
+      .setStyle("PRIMARY"),
+  ]);
+export const createInfoRunnerMessageActionRow = () =>
+  new MessageActionRow().addComponents([
+    new MessageButton()
+      .setCustomId("delete-runner")
+      .setLabel("Supprimer ❌")
+      .setStyle("DANGER"),
+  ]);
+
 export const handleButton = async (interaction: ButtonInteraction) => {
   if (!interaction.isButton()) return;
   match(interaction.customId)

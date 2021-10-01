@@ -5,6 +5,7 @@ import { handleButton } from "./button";
 import { aCommand } from "./commands/a";
 import { Command, handleCommand } from "./commands/command";
 import { pCommand } from "./commands/p";
+import { runnerCommand } from "./commands/runner";
 import { initConfig } from "./config";
 import { loadFromDB, saveToDB } from "./db";
 import { createDailyGlobalCount } from "./global-count";
@@ -15,7 +16,7 @@ export const store = initStore();
 
 const rest = new REST({ version: "9" }).setToken(config.TOKEN);
 
-const commandList = [aCommand, pCommand];
+const commandList = [aCommand, pCommand, runnerCommand];
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const commands = new Collection<string, Command>();
 

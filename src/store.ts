@@ -1,5 +1,3 @@
-import { loadFromDB, saveToDB } from "./db";
-
 export type CarState = "IDLE" | "FOUND";
 
 export type Car = {
@@ -13,15 +11,15 @@ export type Car = {
 
 export type Runner = {
   name: string;
-  userId?: string;
-  messageId: string;
-  phoneNumber?: string;
+  countMessageId: string;
+  infoMessageId: string;
+  phoneNumber: string;
   count: {
     ongoing: number;
     total: number;
   };
-  price: number;
-  rdvPlace: string;
+  price?: number;
+  rdvPlace?: string;
 };
 
 export type Index = {
@@ -58,8 +56,8 @@ export const initStore = () => {
     cars: [],
     runners: [],
     index: {},
-    prices: [],
-    rdvPlaces: [],
+    prices: [350, 450, 500],
+    rdvPlaces: ["Eglise", "Double file"],
   };
   const loadState = (loadedState: State) => {
     console.log("loading state ...", loadedState);
@@ -105,6 +103,24 @@ export const initStore = () => {
   const upsertDailyCount = (dailyCount: DailyCount) => {
     state.dailyCount = dailyCount;
   };
+  const upsertRunner = (runner: Runner) => {
+    state.runners = [
+      ...state.runners.filter((r) => r.name !== runner.name),
+      runner,
+    ];
+  };
+  const removePrice = (price: number) => {
+    state.prices = state.prices.filter((p) => p !== price);
+  };
+  const insertPrice = (price: number) => {
+    state.prices = [...state.prices, price].sort((p, c) => p - c);
+  };
+  const removePlace = (place: string) => {
+    state.rdvPlaces = state.rdvPlaces.filter((p) => p !== place);
+  };
+  const insertPlace = (place: string) => {
+    state.rdvPlaces = [...state.rdvPlaces, place];
+  };
   return {
     state,
     mutations: {
@@ -115,6 +131,11 @@ export const initStore = () => {
       sellCar,
       setContact,
       upsertDailyCount,
+      upsertRunner,
+      removePrice,
+      insertPrice,
+      removePlace,
+      insertPlace,
     },
   };
 };

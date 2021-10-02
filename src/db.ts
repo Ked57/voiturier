@@ -6,43 +6,21 @@ import { config, store } from "./app";
 import { getChannel } from "./channel";
 
 export const saveToDB = async () => {
-  match(process.env.NODE_ENV)
-    .with("production", async () => {
-      try {
-        await saveFile();
-      } catch (err) {
-        console.error("ERROR: Saving db file to Discord -> ", err);
-        throw err;
-      }
-    })
-    .otherwise(() => {
-      try {
-        writeFile("./db.json", JSON.stringify(store.state));
-      } catch (err) {
-        console.error("ERROR: Saving db file to fs -> ", err);
-      }
-    });
+  try {
+    await saveFile();
+  } catch (err) {
+    console.error("ERROR: Saving db file to Discord -> ", err);
+    throw err;
+  }
 };
 
 export const loadFromDB = async () => {
-  match(process.env.NODE_ENV)
-    .with("production", async () => {
-      try {
-        store.mutations.loadState((await getFile()) as any);
-      } catch (err) {
-        console.error("ERROR: Loading db file from Discord -> ", err);
-        throw err;
-      }
-    })
-    .otherwise(async () => {
-      try {
-        store.mutations.loadState(
-          JSON.parse((await readFile("./db.json")).toString())
-        );
-      } catch (err) {
-        console.error("ERROR: Loading db file from fs -> ", err);
-      }
-    });
+  try {
+    store.mutations.loadState((await getFile()) as any);
+  } catch (err) {
+    console.error("ERROR: Loading db file from Discord -> ", err);
+    throw err;
+  }
 };
 
 export const saveFile = async () => {

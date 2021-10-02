@@ -63,16 +63,8 @@ client.on("interactionCreate", async (interaction) => {
   }
 })();
 client.login(config.TOKEN).then(async () => {
-  console.log(
-    `Started loading Voiturier state from ${
-      process.env.NODE_ENV === "production" ? "Discord" : "filesystem"
-    }.`
-  );
+  console.log(`Started loading Voiturier state from "Discord.`);
   await loadFromDB();
   setInterval(() => saveToDB(), 15000);
-  console.log(
-    `Successfully reloaded Voiturier state from ${
-      process.env.NODE_ENV === "production" ? "Discord" : "filesystem"
-    }.`
-  );
+  console.log(`Successfully reloaded Voiturier state from Discord`);
 });

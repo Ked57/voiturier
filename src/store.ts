@@ -1,3 +1,6 @@
+import Redis from "ioredis";
+import { config } from "./app";
+
 export type CarState = "IDLE" | "FOUND";
 
 export type Car = {
@@ -51,31 +54,52 @@ export type State = {
 
 export type Mutation = (...args: any) => void;
 
+export type Store = {
+  getState: () => Promise<State>;
+  mutations: { [key: string]: Mutation };
+};
+
+const baseState: State = {
+  cars: [],
+  runners: [],
+  index: {},
+  prices: [500, 650, 800],
+  rdvPlaces: ["Eglise", "Double file"],
+};
+
 export const initStore = () => {
-  const state: State = {
-    cars: [],
-    runners: [],
-    index: {},
-    prices: [500, 650, 800],
-    rdvPlaces: ["Eglise", "Double file"],
+  const redis = new Redis(Number(config.REDIS_PORT), config.REDIS_HOST, {
+    password: config.REDIS_PASSWORD,
+  });
+
+  const getState = async (): Promise<State> => {
+    const state = await redis.get(config.ENV);
+    if (!state) {
+      console.error(
+        `Couldn't find state for env ${config.ENV}, creating a new one`
+      );
+    }
+    return state ? (JSON.parse(state) as State) : baseState;
   };
-  const loadState = (loadedState: State) => {
-    console.log("loading state ...", loadedState);
-    Object.entries(loadedState).map(([key, value]) =>
-      Object.assign(state, { [key]: value })
-    );
+  const saveState = async (state: State) => {
+    await redis.set(config.ENV, JSON.stringify(state));
   };
-  const addCar = (car: Car) => {
+  const addCar = async (car: Car) => {
+    const state = await getState();
     state.cars = [...state.cars, car];
+    await saveState(state);
   };
-  const removeCar = (messageId: string) => {
+  const removeCar = async (messageId: string) => {
+    const state = await getState();
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
+    await saveState(state);
   };
-  const updateCarState = (
+  const updateCarState = async (
     messageId: string,
     carState: CarState,
     foundBy?: string
   ) => {
+    const state = await getState();
     const car = state.cars.find(
       (car) => car.messageId === messageId || car.runnerMessageId === messageId
     );
@@ -90,47 +114,65 @@ export const initStore = () => {
       ...state.cars.filter((car) => car.messageId !== messageId),
       { ...car, state: carState, foundBy },
     ];
+    await saveState(state);
   };
-  const sellCar = (messageId: string) => {
+  const sellCar = async (messageId: string) => {
+    const state = await getState();
     if (state.dailyCount) {
       state.dailyCount.count = state.dailyCount?.count + 1;
     }
     state.cars = [...state.cars.filter((car) => car.messageId !== messageId)];
+    await saveState(state);
   };
-  const setContact = (contact?: Contact) => {
+  const setContact = async (contact?: Contact) => {
+    const state = await getState();
     state.contact = contact;
+    await saveState(state);
   };
-  const upsertDailyCount = (dailyCount: DailyCount) => {
+  const upsertDailyCount = async (dailyCount: DailyCount) => {
+    const state = await getState();
     state.dailyCount = dailyCount;
+    await saveState(state);
   };
-  const upsertRunner = (runner: Runner) => {
+  const upsertRunner = async (runner: Runner) => {
+    const state = await getState();
     state.runners = [
       ...state.runners.filter((r) => r.infoMessageId !== runner.infoMessageId),
       runner,
     ];
+    await saveState(state);
     return runner;
   };
-  const removeRunner = (runner: Runner) => {
+  const removeRunner = async (runner: Runner) => {
+    const state = await getState();
     state.runners = state.runners.filter(
       (r) => r.infoMessageId !== runner.infoMessageId
     );
+    await saveState(state);
   };
-  const removePrice = (price: number) => {
+  const removePrice = async (price: number) => {
+    const state = await getState();
     state.prices = state.prices.filter((p) => p !== price);
+    await saveState(state);
   };
-  const insertPrice = (price: number) => {
+  const insertPrice = async (price: number) => {
+    const state = await getState();
     state.prices = [...state.prices, price].sort((p, c) => p - c);
+    await saveState(state);
   };
-  const removePlace = (place: string) => {
+  const removePlace = async (place: string) => {
+    const state = await getState();
     state.rdvPlaces = state.rdvPlaces.filter((p) => p !== place);
+    await saveState(state);
   };
-  const insertPlace = (place: string) => {
+  const insertPlace = async (place: string) => {
+    const state = await getState();
     state.rdvPlaces = [...state.rdvPlaces, place];
+    await saveState(state);
   };
   return {
-    state,
+    getState,
     mutations: {
-      loadState,
       addCar,
       removeCar,
       updateCarState,

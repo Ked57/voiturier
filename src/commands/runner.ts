@@ -84,8 +84,8 @@ export const runnerCommand = {
           ),
       ],
       components: [
-        createSelectPriceSelectMenu(String(name)),
-        createSelectPlaceSelectMenu(String(name)),
+        await createSelectPriceSelectMenu(String(name)),
+        await createSelectPlaceSelectMenu(String(name)),
         createInfoRunnerMessageActionRow(),
       ],
     });

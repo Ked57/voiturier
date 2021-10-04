@@ -1,4 +1,8 @@
 const configList = [
+  "REDIS_PORT",
+  "REDIS_HOST",
+  "REDIS_PASSWORD",
+  "ENV",
   "CLIENT_ID",
   "GUILD_ID",
   "TOKEN",
@@ -12,6 +16,10 @@ const configList = [
 ];
 
 type Config = {
+  REDIS_PORT: string;
+  REDIS_HOST: string;
+  REDIS_PASSWORD: string;
+  ENV: string;
   CLIENT_ID: string;
   GUILD_ID: string;
   TOKEN: string;

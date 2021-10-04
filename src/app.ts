@@ -7,8 +7,6 @@ import { Command, handleCommand } from "./commands/command";
 import { pCommand } from "./commands/p";
 import { runnerCommand } from "./commands/runner";
 import { initConfig } from "./config";
-import { loadFromDB, saveToDB } from "./db";
-import { createDailyGlobalCount } from "./global-count";
 import { handleSelectMenu } from "./select-menu";
 import { initStore } from "./store";
 
@@ -62,9 +60,4 @@ client.on("interactionCreate", async (interaction) => {
     console.error(error);
   }
 })();
-client.login(config.TOKEN).then(async () => {
-  console.log(`Started loading Voiturier state from "Discord.`);
-  await loadFromDB();
-  setInterval(() => saveToDB(), 15000);
-  console.log(`Successfully reloaded Voiturier state from Discord`);
-});
+client.login(config.TOKEN);

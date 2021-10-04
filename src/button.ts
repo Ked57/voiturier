@@ -97,7 +97,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         );
         return;
       }
-      const car = store.state.cars.find(
+      const car = (await store.getState()).cars.find(
         (car) =>
           car.messageId === interaction.message.id ||
           car.runnerMessageId === interaction.message.id
@@ -109,7 +109,11 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         );
         return;
       }
-      store.mutations.updateCarState(interaction.message.id, "FOUND", foundBy);
+      await store.mutations.updateCarState(
+        interaction.message.id,
+        "FOUND",
+        foundBy
+      );
       try {
         const vehicleMessage = (
           await (await getChannel(config.VEHICLE_CHANNEL_ID))?.messages.fetch()
@@ -132,7 +136,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       }
     })
     .with("lost", async () => {
-      const car = store.state.cars.find(
+      const car = (await store.getState()).cars.find(
         (car) =>
           car.messageId === interaction.message.id ||
           car.runnerMessageId === interaction.message.id
@@ -144,7 +148,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         );
         return;
       }
-      store.mutations.updateCarState(interaction.message.id, "IDLE");
+      await store.mutations.updateCarState(interaction.message.id, "IDLE");
       try {
         const vehicleMessage = (
           await (await getChannel(config.VEHICLE_CHANNEL_ID))?.messages.fetch()
@@ -167,7 +171,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       }
     })
     .with("sell", async () => {
-      const car = store.state.cars.find(
+      const car = (await store.getState()).cars.find(
         (car) => car.messageId === interaction.message.id
       );
       if (!car) {
@@ -189,15 +193,17 @@ export const handleButton = async (interaction: ButtonInteraction) => {
           )?.messages.fetch(car.runnerMessageId)
         )?.delete();
 
-        store.mutations.sellCar(car.messageId);
-        store.mutations.removeCar(car.messageId);
-        await updateDailyGlobalCount(store.state.dailyCount?.count || 1);
+        await store.mutations.sellCar(car.messageId);
+        await store.mutations.removeCar(car.messageId);
+        await updateDailyGlobalCount(
+          (await store.getState()).dailyCount?.count || 1
+        );
       } catch (err) {
         console.error(err);
       }
     })
     .with("delete", async () => {
-      const car = store.state.cars.find(
+      const car = (await store.getState()).cars.find(
         (car) => car.messageId === interaction.message.id
       );
       if (!car) {
@@ -218,13 +224,13 @@ export const handleButton = async (interaction: ButtonInteraction) => {
             await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
           )?.messages.fetch(car.runnerMessageId)
         )?.delete();
-        store.mutations.removeCar(car.messageId);
+        await store.mutations.removeCar(car.messageId);
       } catch (err) {
         console.error(err);
       }
     })
     .with("delete-contact", async () => {
-      if (!store.state.contact) {
+      if (!(await store.getState()).contact) {
         console.error("ERROR: Trying to remove contact -> contact not found");
         return;
       }
@@ -232,21 +238,25 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         (
           await (
             await getChannel(config.VEHICLE_CHANNEL_ID)
-          )?.messages.fetch(store.state.contact.vehicleMessageId)
+          )?.messages.fetch(
+            (await store.getState()).contact?.vehicleMessageId || ""
+          )
         )?.delete();
         (
           await (
             await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
-          )?.messages.fetch(store.state.contact.vehicleRunnerMessageId)
+          )?.messages.fetch(
+            (await store.getState()).contact?.vehicleRunnerMessageId || ""
+          )
         )?.delete();
-        store.mutations.setContact();
+        await store.mutations.setContact();
       } catch (err) {
         console.error(err);
       }
     })
     .with("plus-one-runner", async () => {
       const messageId = interaction.message.id;
-      const runner = store.state.runners.find(
+      const runner = (await store.getState()).runners.find(
         (runner) =>
           runner.countMessageId === messageId ||
           runner.infoMessageId === messageId
@@ -255,7 +265,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         interaction.reply({ content: "Runner inconnu", ephemeral: true });
         return;
       }
-      const updatedRunner = store.mutations.upsertRunner({
+      const updatedRunner = await store.mutations.upsertRunner({
         ...runner,
         count: {
           ongoing: runner.count.ongoing + 1,
@@ -330,7 +340,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
     })
     .with("minus-one-runner", async () => {
       const messageId = interaction.message.id;
-      const runner = store.state.runners.find(
+      const runner = (await store.getState()).runners.find(
         (runner) =>
           runner.countMessageId === messageId ||
           runner.infoMessageId === messageId
@@ -339,7 +349,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         interaction.reply({ content: "Runner inconnu" });
         return;
       }
-      const updatedRunner = store.mutations.upsertRunner({
+      const updatedRunner = await store.mutations.upsertRunner({
         ...runner,
         count: {
           ongoing: runner.count.ongoing - 1,
@@ -414,7 +424,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
     })
     .with("new-runner", async () => {
       const messageId = interaction.message.id;
-      const runner = store.state.runners.find(
+      const runner = (await store.getState()).runners.find(
         (runner) =>
           runner.countMessageId === messageId ||
           runner.infoMessageId === messageId
@@ -423,7 +433,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         interaction.reply({ content: "Runner inconnu" });
         return;
       }
-      const updatedRunner = store.mutations.upsertRunner({
+      const updatedRunner = await store.mutations.upsertRunner({
         ...runner,
         count: { ...runner.count, ongoing: 0 },
       });
@@ -495,7 +505,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
     })
     .with("delete-runner", async () => {
       const messageId = interaction.message.id;
-      const runner = store.state.runners.find(
+      const runner = (await store.getState()).runners.find(
         (runner) =>
           runner.countMessageId === messageId ||
           runner.infoMessageId === messageId
@@ -508,7 +518,7 @@ export const handleButton = async (interaction: ButtonInteraction) => {
       countChannel.messages.cache.get(runner.countMessageId)?.delete();
       const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
       await infoChannel.messages.cache.get(runner.infoMessageId)?.delete();
-      store.mutations.removeRunner(runner);
+      await store.mutations.removeRunner(runner);
     })
     .otherwise((value) =>
       console.log("couldnt handle button with customId", value)

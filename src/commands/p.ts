@@ -34,17 +34,21 @@ export const pCommand = {
       });
       return;
     }
-    if (store.state.contact) {
+    if ((await store.getState()).contact) {
       try {
         (
           await (
             await getChannel(config.VEHICLE_CHANNEL_ID)
-          )?.messages.fetch(store.state.contact.vehicleMessageId)
+          )?.messages.fetch(
+            (await store.getState()).contact?.vehicleMessageId || ""
+          )
         )?.delete();
         (
           await (
             await getChannel(config.VEHICLE_RUNNER_CHANNEL_ID)
-          )?.messages.fetch(store.state.contact.vehicleRunnerMessageId)
+          )?.messages.fetch(
+            (await store.getState()).contact?.vehicleRunnerMessageId || ""
+          )
         )?.delete();
         store.mutations.setContact();
       } catch (err) {

@@ -8,7 +8,7 @@ import { match } from "ts-pattern";
 import { config, store } from "./app";
 import { getChannel } from "./channel";
 
-export const createSelectPriceSelectMenu = (name: string) =>
+export const createSelectPriceSelectMenu = async (name: string) =>
   new MessageActionRow().addComponents(
     new MessageSelectMenu()
       .setCustomId(`runner_price`)
@@ -18,13 +18,13 @@ export const createSelectPriceSelectMenu = (name: string) =>
           label: `0$`,
           value: `${name}/0`,
         },
-        ...store.state.prices.map((price) => ({
+        ...(await store.getState()).prices.map((price) => ({
           label: `${price}$`,
           value: `${name}/${price}`,
         }))
       )
   );
-export const createSelectPlaceSelectMenu = (name: string) =>
+export const createSelectPlaceSelectMenu = async (name: string) =>
   new MessageActionRow().addComponents(
     new MessageSelectMenu()
       .setCustomId(`runner_place`)
@@ -34,7 +34,7 @@ export const createSelectPlaceSelectMenu = (name: string) =>
           label: `Non définit`,
           value: `${name}/`,
         },
-        ...store.state.rdvPlaces.map((place) => ({
+        ...(await store.getState()).rdvPlaces.map((place) => ({
           label: `${place}`,
           value: `${name}/${place}`,
         }))
@@ -53,14 +53,16 @@ export const handleSelectMenu = async (interaction: SelectMenuInteraction) => {
         return;
       }
       const [name, selectedValue] = value.split("/");
-      const runner = store.state.runners.find((r) => r.name === name);
+      const runner = (await store.getState()).runners.find(
+        (r) => r.name === name
+      );
       if (!runner) {
         console.error(
           "Couldnt handle select with customId 'runner_price', runner not found"
         );
         return;
       }
-      const updatedRunner = store.mutations.upsertRunner({
+      const updatedRunner = await store.mutations.upsertRunner({
         ...runner,
         price: Number(selectedValue),
       });
@@ -117,14 +119,16 @@ export const handleSelectMenu = async (interaction: SelectMenuInteraction) => {
         return;
       }
       const [name, selectedValue] = value.split("/");
-      const runner = store.state.runners.find((r) => r.name === name);
+      const runner = (await store.getState()).runners.find(
+        (r) => r.name === name
+      );
       if (!runner) {
         console.error(
           "Couldnt handle select with customId 'runner_place', runner not found"
         );
         return;
       }
-      const updatedRunner = store.mutations.upsertRunner({
+      const updatedRunner = await store.mutations.upsertRunner({
         ...runner,
         rdvPlace: String(selectedValue),
       });

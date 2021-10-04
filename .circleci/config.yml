@@ -4,9 +4,6 @@ executors:
   main-executor:
     docker:
       - image: circleci/node:16.6.0
-  docker-executor:
-    docker:
-      - image: docker:19.03.13
 
 jobs:
   install-dependencies:
@@ -39,9 +36,9 @@ jobs:
           paths:
             - dist
   build-and-deploy-docker-image:
-    executor: docker-executor
+    executor: main-executor
     parameters:
-      tag:
+      app_name:
         type: string
     steps:
       - checkout
@@ -50,11 +47,7 @@ jobs:
       - attach_workspace:
           at: ./
       - run:
-          command: |
-            docker build . -t voiturier
-            docker login rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1 -u nologin -p $SCW_SECRET_TOKEN
-            docker tag voiturier:latest rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
-            docker push rg.fr-par.scw.cloud/funcscwvoiturier7shsmsv1/voiturier:<< parameters.tag >>
+          command: npx caprover deploy -h $HOST -p $PASSWORD -b master -a << parameters.app_name >>
 
 workflows:
   version: 2
@@ -79,7 +72,7 @@ workflows:
               only: /.*/
       - build-and-deploy-docker-image:
           name: build-and-deploy-docker-image-staging
-          tag: latest-beta
+          app_name: voiturier-staging
           requires:
             - build
             - check-format
@@ -89,7 +82,7 @@ workflows:
             tags:
               ignore: /.*/
       - build-and-deploy-docker-image:
-          tag: latest
+          app_name: voiturier
           requires:
             - build
             - check-format

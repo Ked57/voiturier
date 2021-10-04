@@ -56,7 +56,7 @@ export const initStore = () => {
     cars: [],
     runners: [],
     index: {},
-    prices: [350, 450, 500],
+    prices: [500, 650, 800],
     rdvPlaces: ["Eglise", "Double file"],
   };
   const loadState = (loadedState: State) => {

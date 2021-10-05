@@ -42,8 +42,6 @@ jobs:
         type: string
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
       - attach_workspace:
           at: ./
       - run:

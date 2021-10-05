@@ -25,8 +25,12 @@ client.on("ready", () => {
 
 client.on("interactionCreate", async (interaction) => {
   try {
+    if(interaction.guildId !== config.GUILD_ID){
+      return;
+    }
     if (interaction.isCommand()) {
       await handleCommand(commands, interaction);
+      return;
     }
     if (interaction.isButton()) {
       await handleButton(interaction);

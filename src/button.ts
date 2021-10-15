@@ -300,7 +300,9 @@ export const handleButton = async (interaction: ButtonInteraction) => {
           ],
         });
       const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
-      await infoChannel.messages.cache.get(updatedRunner.infoMessageId)?.edit({
+      await (
+        await infoChannel.messages.fetch(updatedRunner.infoMessageId)
+      )?.edit({
         embeds: [
           new MessageEmbed()
             .setTitle(updatedRunner.name)
@@ -384,7 +386,9 @@ export const handleButton = async (interaction: ButtonInteraction) => {
           ],
         });
       const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
-      await infoChannel.messages.cache.get(updatedRunner.infoMessageId)?.edit({
+      await (
+        await infoChannel.messages.fetch(updatedRunner.infoMessageId)
+      )?.edit({
         embeds: [
           new MessageEmbed()
             .setTitle(updatedRunner.name)
@@ -465,7 +469,9 @@ export const handleButton = async (interaction: ButtonInteraction) => {
           ],
         });
       const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
-      await infoChannel.messages.cache.get(updatedRunner.infoMessageId)?.edit({
+      await (
+        await infoChannel.messages.fetch(updatedRunner.infoMessageId)
+      )?.edit({
         embeds: [
           new MessageEmbed()
             .setTitle(updatedRunner.name)
@@ -515,9 +521,11 @@ export const handleButton = async (interaction: ButtonInteraction) => {
         return;
       }
       const countChannel = await getChannel(config.COUNT_RUNNER_CHANNEL_ID);
-      countChannel.messages.cache.get(runner.countMessageId)?.delete();
+      await (
+        await countChannel.messages.fetch(runner.countMessageId)
+      )?.delete();
       const infoChannel = await getChannel(config.INFO_RUNNER_CHANNEL_ID);
-      await infoChannel.messages.cache.get(runner.infoMessageId)?.delete();
+      await (await infoChannel.messages.fetch(runner.infoMessageId))?.delete();
       await store.mutations.removeRunner(runner);
     })
     .otherwise((value) =>

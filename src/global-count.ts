@@ -8,7 +8,7 @@ export const createDailyGlobalCount = async () => {
   const messageId = await postMessageInChannel(config.GLOBAL_COUNT_CHANNEL_ID, {
     embeds: [
       new MessageEmbed({ title: date }).setDescription(`Voitures: ${1}
-    Chiffre d'affaire: ${2280}$`),
+    Chiffre d'affaire: ${3420}$`),
     ],
   });
   store.mutations.upsertDailyCount({
@@ -52,7 +52,7 @@ export const updateDailyGlobalCount = async (count: number) => {
       new MessageEmbed({
         title: countMessage.embeds[0].title || "",
       }).setDescription(`Voitures: ${count}
-      Chiffre d'affaire: ${count * 2280}$`),
+      Chiffre d'affaire: ${count * 3420}$`),
     ],
   });
   store.mutations.upsertDailyCount({

@@ -63,7 +63,7 @@ const baseState: State = {
   cars: [],
   runners: [],
   index: {},
-  prices: [500, 650, 800],
+  prices: [750, 950, 1200],
   rdvPlaces: ["Eglise", "Double file"],
 };
 

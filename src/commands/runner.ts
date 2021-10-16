@@ -1,11 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {
-  CommandInteraction,
-  GuildMember,
-  MessageActionRow,
-  MessageEmbed,
-  MessageSelectMenu,
-} from "discord.js";
+import { CommandInteraction, MessageEmbed } from "discord.js";
 import { config, store } from "../app";
 import {
   createCountRunnerMessageActionRow,
@@ -48,7 +42,7 @@ export const runnerCommand = {
       });
       return;
     }
-
+    const state = await store.getState();
     const countMessage = await postMessageInChannel(
       config.COUNT_RUNNER_CHANNEL_ID,
       {
@@ -84,8 +78,8 @@ export const runnerCommand = {
           ),
       ],
       components: [
-        await createSelectPriceSelectMenu(String(name)),
-        await createSelectPlaceSelectMenu(String(name)),
+        await createSelectPriceSelectMenu(String(name), state.prices),
+        await createSelectPlaceSelectMenu(String(name), state.rdvPlaces),
         createInfoRunnerMessageActionRow(),
       ],
     });

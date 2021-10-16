@@ -6,9 +6,13 @@ import {
 } from "discord.js";
 import { match } from "ts-pattern";
 import { config, store } from "./app";
+import { createInfoRunnerMessageActionRow } from "./button";
 import { getChannel } from "./channel";
 
-export const createSelectPriceSelectMenu = async (name: string) =>
+export const createSelectPriceSelectMenu = async (
+  name: string,
+  prices: number[]
+) =>
   new MessageActionRow().addComponents(
     new MessageSelectMenu()
       .setCustomId(`runner_price`)
@@ -18,13 +22,16 @@ export const createSelectPriceSelectMenu = async (name: string) =>
           label: `0$`,
           value: `${name}/0`,
         },
-        ...(await store.getState()).prices.map((price) => ({
+        ...prices.map((price) => ({
           label: `${price}$`,
           value: `${name}/${price}`,
         }))
       )
   );
-export const createSelectPlaceSelectMenu = async (name: string) =>
+export const createSelectPlaceSelectMenu = async (
+  name: string,
+  rdvPlaces: string[]
+) =>
   new MessageActionRow().addComponents(
     new MessageSelectMenu()
       .setCustomId(`runner_place`)
@@ -34,7 +41,7 @@ export const createSelectPlaceSelectMenu = async (name: string) =>
           label: `Non définit`,
           value: `${name}/`,
         },
-        ...(await store.getState()).rdvPlaces.map((place) => ({
+        ...rdvPlaces.map((place) => ({
           label: `${place}`,
           value: `${name}/${place}`,
         }))
@@ -52,10 +59,9 @@ export const handleSelectMenu = async (interaction: SelectMenuInteraction) => {
         );
         return;
       }
+      const state = await store.getState();
       const [name, selectedValue] = value.split("/");
-      const runner = (await store.getState()).runners.find(
-        (r) => r.name === name
-      );
+      const runner = state.runners.find((r) => r.name === name);
       if (!runner) {
         console.error(
           "Couldnt handle select with customId 'runner_price', runner not found"
@@ -108,6 +114,11 @@ export const handleSelectMenu = async (interaction: SelectMenuInteraction) => {
                 }
               ),
           ],
+          components: [
+            await createSelectPriceSelectMenu(runner.name, state.prices),
+            await createSelectPlaceSelectMenu(runner.name, state.rdvPlaces),
+            createInfoRunnerMessageActionRow(),
+          ],
         });
     })
     .with("runner_place", async () => {
@@ -119,9 +130,8 @@ export const handleSelectMenu = async (interaction: SelectMenuInteraction) => {
         return;
       }
       const [name, selectedValue] = value.split("/");
-      const runner = (await store.getState()).runners.find(
-        (r) => r.name === name
-      );
+      const state = await store.getState();
+      const runner = state.runners.find((r) => r.name === name);
       if (!runner) {
         console.error(
           "Couldnt handle select with customId 'runner_place', runner not found"
@@ -173,6 +183,11 @@ export const handleSelectMenu = async (interaction: SelectMenuInteraction) => {
                   inline: true,
                 }
               ),
+          ],
+          components: [
+            await createSelectPriceSelectMenu(runner.name, state.prices),
+            await createSelectPlaceSelectMenu(runner.name, state.rdvPlaces),
+            createInfoRunnerMessageActionRow(),
           ],
         });
     })

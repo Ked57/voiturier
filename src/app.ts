@@ -6,6 +6,7 @@ import { aCommand } from "./commands/a";
 import { Command, handleCommand } from "./commands/command";
 import { pCommand } from "./commands/p";
 import { runnerCommand } from "./commands/runner";
+import { runnerSyncCommand } from "./commands/runner-sync";
 import { initConfig } from "./config";
 import { handleSelectMenu } from "./select-menu";
 import { initStore } from "./store";
@@ -15,7 +16,7 @@ export const store = initStore();
 
 const rest = new REST({ version: "9" }).setToken(config.TOKEN);
 
-const commandList = [aCommand, pCommand, runnerCommand];
+const commandList = [aCommand, pCommand, runnerCommand, runnerSyncCommand];
 export const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 const commands = new Collection<string, Command>();
 

@@ -1,4 +1,4 @@
-import { MessageOptions, TextBasedChannels } from "discord.js";
+import { MessageOptions } from "discord.js";
 import { getChannel } from "./channel";
 
 export const postMessageInChannel = async (
@@ -12,4 +12,11 @@ export const postMessageInChannel = async (
     );
   }
   return channel.send(message);
+};
+
+export const deleteMessageInChannel = async (
+  channelId: string,
+  messageId: string
+) => {
+  (await (await getChannel(channelId))?.messages.fetch(messageId))?.delete();
 };

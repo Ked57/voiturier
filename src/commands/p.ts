@@ -2,7 +2,7 @@ import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { config, store } from "../app";
 import { createContactRemoveMessageActionRow } from "../button";
-import { postContactInVehicleRunner } from "../vehicle-runner";
+import { postContactInVehicleRunner } from "../channels/vehicle-runner";
 import { getChannel } from "../channel";
 
 export const pCommand = {

@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandInteraction, GuildMember, MessageEmbed } from "discord.js";
 import { config, store } from "../app";
 import {
   createCountRunnerMessageActionRow,
@@ -94,5 +94,11 @@ export const runnerCommand = {
       },
     };
     store.mutations.upsertRunner(runner);
+
+    console.log(
+      `${(interaction.member as GuildMember).displayName} added runner "${
+        runner.name
+      }"`
+    );
   },
 };

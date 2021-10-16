@@ -2,7 +2,7 @@ import { CommandInteraction, GuildMember } from "discord.js";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { config, store } from "../app";
 import { createCarInitialMessageActionRow } from "../button";
-import { postCarInVehicleRunner } from "../vehicle-runner";
+import { postCarInVehicleRunner } from "../channels/vehicle-runner";
 
 export const aCommand = {
   data: new SlashCommandBuilder()

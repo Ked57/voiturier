@@ -1,12 +1,8 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import { CommandInteraction, MessageEmbed } from "discord.js";
+import { CommandInteraction } from "discord.js";
 import { config, store } from "../app";
-import { createInfoRunnerMessageActionRow } from "../button";
 import { getChannel } from "../channel";
-import {
-  createSelectPlaceSelectMenu,
-  createSelectPriceSelectMenu,
-} from "../select-menu";
+import { createRunnerInfoMessageOptions } from "../channels/runner-info";
 
 export const runnerSyncCommand = {
   data: new SlashCommandBuilder()
@@ -23,55 +19,18 @@ export const runnerSyncCommand = {
       return;
     }
     for await (const runner of state.runners) {
-      (await infoRunnerChannel.messages.fetch(runner.infoMessageId)).edit({
-        embeds: [
-          new MessageEmbed()
-            .setTitle(String(runner.name))
-            .setColor("GREEN")
-            .setFields(
-              {
-                name: "Téléphone",
-                value: runner.phoneNumber,
-                inline: true,
-              },
-              {
-                name: "Prix",
-                value: `${runner.price}$`,
-                inline: true,
-              },
-              {
-                name: "Livraison",
-                value: `${runner.rdvPlace}`,
-                inline: true,
-              },
-              {
-                name: "Compteur",
-                value: `${runner.count.ongoing}`,
-                inline: true,
-              },
-              {
-                name: "Total",
-                value: `${runner.count.total}`,
-                inline: true,
-              },
-              {
-                name: "A payer",
-                value: `${runner.count.ongoing * (runner.price || 0)}$`,
-                inline: true,
-              }
-            ),
-        ],
-        components: [
-          await createSelectPriceSelectMenu(runner.name, state.prices),
-          await createSelectPlaceSelectMenu(runner.name, state.rdvPlaces),
-          createInfoRunnerMessageActionRow(),
-        ],
-      });
+      (await infoRunnerChannel.messages.fetch(runner.infoMessageId)).edit(
+        await createRunnerInfoMessageOptions(
+          runner,
+          state.prices,
+          state.rdvPlaces
+        )
+      );
       console.log(`Updated runner "${runner.name}" successfully`);
     }
     await interaction.reply({
       ephemeral: true,
-      content: "Runners sync successful ✅",
+      content: "Runners sync successfully ✅",
     });
   },
 };

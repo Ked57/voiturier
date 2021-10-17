@@ -60,7 +60,9 @@ export const sellVehicle = async (interaction: ButtonInteraction) => {
 
     await store.mutations.sellCar(car.messageId);
     await store.mutations.removeCar(car.messageId);
-    await updateDailyGlobalCount(state.dailyCount?.count || 1);
+    await updateDailyGlobalCount(
+      (await store.getState()).dailyCount?.count || 1
+    );
     console.log(
       `${(interaction.member as GuildMember).displayName} sold vehicle ${
         car.model

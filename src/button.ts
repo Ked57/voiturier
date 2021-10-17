@@ -1,18 +1,9 @@
-import {
-  ButtonInteraction,
-  GuildMember,
-  MessageActionRow,
-  MessageButton,
-  MessageEmbed,
-} from "discord.js";
+import { ButtonInteraction, MessageActionRow, MessageButton } from "discord.js";
 import { match } from "ts-pattern";
-import { config, store } from "./app";
-import { getChannel } from "./channel";
 import {
   decrementRunnerCount,
   incrementRunnerCount,
   resetRunnerCount,
-  updateRunnerCountMessage,
 } from "./channels/runner-count";
 import { deleteRunner } from "./channels/runner-info";
 import {
@@ -22,8 +13,6 @@ import {
   markVehicle,
 } from "./channels/vehicle";
 import { removeContact } from "./contact";
-import { updateDailyGlobalCount } from "./global-count";
-import { deleteMessageInChannel } from "./message";
 
 export const createCarInitialMessageActionRow = () =>
   new MessageActionRow().addComponents([

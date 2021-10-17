@@ -19,6 +19,7 @@ export const createDailyGlobalCount = async () => {
 };
 
 export const updateDailyGlobalCount = async (count: number) => {
+  console.log("count", count);
   let messageId = (await store.getState()).dailyCount?.messageId;
   if (!messageId) {
     await createDailyGlobalCount();
